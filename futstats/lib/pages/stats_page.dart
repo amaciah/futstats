@@ -13,6 +13,9 @@ class StatsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Estadísticas'),
+      ),
       body: FutureBuilder<Map<String, Statistic>>(
         future: StatisticRepository().getSeasonStats(player.id, season.id),
         builder: (context, snapshot) {
@@ -30,9 +33,10 @@ class StatsPage extends StatelessWidget {
             itemCount: stats.length,
             itemBuilder: (context, index) {
               final statKey = stats.keys.elementAt(index);
-              final statistic = stats[statKey];
+              final statistic = stats[statKey]!;
+              final statTemplate = StatTemplates.getTemplateById(statistic.id);
               return ListTile(
-                title: Text(statistic!.shortTitle),
+                title: Text(statTemplate.shortTitle),
                 trailing: Text('${statistic.value}'),
               );
             },

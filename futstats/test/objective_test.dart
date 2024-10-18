@@ -62,8 +62,6 @@ void testPositiveObjectiveTargetMet() {
 
   var stat = ManualStat(
     id: "goals",
-    title: "Goles",
-    category: StatCategory.attack,
     initialValue: 3,
   );
 
@@ -82,8 +80,6 @@ void testNegativeObjectiveTargetMet() {
 
   var stat = ManualStat(
     id: "goals_conceded",
-    title: "Goles encajados",
-    category: StatCategory.defense,
     initialValue: 3,
   );
 

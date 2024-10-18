@@ -3,6 +3,7 @@ import 'package:futstats/models/match.dart';
 import 'package:futstats/models/player.dart';
 import 'package:futstats/models/season.dart';
 import 'package:futstats/repositories/match_repository.dart';
+import 'package:intl/intl.dart';
 
 class MatchesPage extends StatelessWidget {
   const MatchesPage({required this.player, required this.season, super.key});
@@ -13,6 +14,9 @@ class MatchesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Partidos'),
+      ),
       body: FutureBuilder<List<Match>>(
         future: MatchRepository().getAllMatches(player.id, season.id),
         builder: (context, snapshot) {
@@ -31,7 +35,9 @@ class MatchesPage extends StatelessWidget {
               final match = matches[index];
               return ListTile(
                 title: Text(match.opponent),
-                subtitle: Text('Fecha: ${match.date.toIso8601String()}'),
+                subtitle: Text(
+                    DateFormat.yMd(Localizations.localeOf(context).toString())
+                        .format(match.date)),
                 onTap: () {
                   //TODO: Navegar a la vista de detalles del partido
                 },

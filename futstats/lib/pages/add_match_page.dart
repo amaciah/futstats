@@ -45,6 +45,18 @@ class _AddMatchPageState extends State<AddMatchPage> {
     }
   }
 
+  // Retroceder al paso anterior
+  void _previousStep() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+    }
+    setState(() {
+      if (_currentStep > 0) {
+        _currentStep--;
+      }
+    });
+  }
+
   // Guardar el partido en Firestore
   void _saveMatch() {
     MatchRepository().setMatch(
@@ -72,6 +84,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
           children: [
             // Semana de partido
             DropdownButtonFormField<int>(
+              value: _matchweek,
               decoration: const InputDecoration(labelText: 'Semana de partido'),
               items: List<int>.generate(38, (i) => i + 1)
                   .map((week) => DropdownMenuItem<int>(
@@ -90,6 +103,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
 
             // Oponente
             TextFormField(
+              initialValue: _opponent,
               decoration: const InputDecoration(labelText: 'Oponente'),
               onSaved: (value) => _opponent = value,
               validator: (value) =>
@@ -105,9 +119,6 @@ class _AddMatchPageState extends State<AddMatchPage> {
                   initialDate: _date,
                   firstDate: DateTime(2000),
                   lastDate: DateTime(2100),
-                  // helpText: 'Seleccione la fecha',
-                  // cancelText: 'Cancelar',
-                  // fieldLabelText: 'Fecha'
                 );
                 if (selectedDate != null) {
                   setState(() {
@@ -146,7 +157,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
             TextFormField(
               decoration: const InputDecoration(labelText: 'Goles'),
               keyboardType: TextInputType.number,
-              initialValue: '0',
+              initialValue: _stats['goals']?.toInt().toString() ?? '0',
               onSaved: (value) => _stats['goals'] = double.parse(value!),
             ),
           ],
@@ -158,6 +169,15 @@ class _AddMatchPageState extends State<AddMatchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Añadir partido'),
+        leading: _currentStep > 0
+            ? IconButton(
+                onPressed: _previousStep,
+                icon: const Icon(Icons.arrow_back),
+              )
+            : null,
+      ),
       body: _currentStep == 0 ? _buildStepOneForm() : _buildStepTwoForm(),
       floatingActionButton: FloatingActionButton(
         child: Icon(_currentStep == 0 ? Icons.arrow_forward : Icons.save),

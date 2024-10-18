@@ -18,8 +18,6 @@ void main() {
     final testSeasonId = 'test-season-id'; // Asegúrate de tener esta temporada creada
     final testStatistic = ManualStat(
       id: 'test-stat-id',
-      title: 'Test Statistic',
-      category: StatCategory.participation,
       initialValue: 3,
     );
 
@@ -34,15 +32,12 @@ void main() {
     test('Get Statistic by ID', () async {
       final retrievedStatistic = await statisticRepo.getStatistic(testPlayerId, testSeasonId, testStatistic.id);
       expect(retrievedStatistic, isNotNull);
-      expect(retrievedStatistic?.title, equals('Test Statistic'));
     });
 
     // Actualizar partido
     test('Update Statistic', () async {
       final updatedStatistic = ManualStat(
         id: testStatistic.id,
-        title: testStatistic.title,
-        category: testStatistic.category,
         initialValue: 5
       );
       await statisticRepo.setStatistic(testPlayerId, testSeasonId, updatedStatistic);

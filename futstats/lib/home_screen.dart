@@ -49,9 +49,6 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Futstats"),
-      ),
       body: Center(
         child: _getPages().elementAt(_selectedIdx),
       ),
