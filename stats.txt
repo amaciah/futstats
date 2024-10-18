@@ -1,0 +1,87 @@
+PARTICIPACIÓN
+Partidos			PJ	+	<-
+Minutos				m	+	<-
+Victorias			V	+	<-
+Empates				E	+	<-
+Derrotas			D	-	<-
+Puntos				p	+	<-
+Goles a favor			GF	+
+Goles en contra			GC	-	<-
+Diferencia de goles		GD	?		GD = GF - GA
+Porterías imbatidas		PI	+	<-
+
+ATAQUE
+Acierto en tiros		T%	%		T% = TP / T %
+-> Tiros totales		T	+	<-
+-> Tiros a puerta		TP	+
+Goles				G	+	<-
+-> Goles en jugada	GJA	+		GJA = G - GBP - GP
+Asistencias			A	+	<-
+Contribuciones de gol		GA	+		GA = G + A
+Pases clave			PK	+	<-
+Acierto en penaltis		GP%	%		GP% = GP / LP %
+-> Goles de penalti		GP	+
+-> Penaltis lanzados		LP	+
+Acierto a balón parado		BP%	%		BP% = (GBP + ABP) / LBP %
+-> Goles a balón parado		GBP	+
+-> Asistencias a balón parado	ABP	+
+-> Lanzamientos a balón parado	LBP	+
+Acierto en centros		C%	%		C% = CC / CI %
+-> Centros completados		CC	+
+-> Centros intentados		CI	+	<-
+Faltas recibidas		FR	+	<-
+-> Penaltis recibidos		PR	+
+
+DEFENSA
+Acierto en entradas		E%	%		E% = EE / EI %
+-> Entradas exitosas		EE	+	<-
+-> Entradas intentadas		EI	+
+Acciones defensivas		AD	+	<-	AD = BD + DD + ID
+-> Bloqueos			BD	+
+-> Despejes			DD	+
+-> Intercepciones		ID	+
+Faltas cometidas		FC	-
+-> Penaltis cometidos		PC	-	<-
+Tarjetas recibidas		TT	-	<-	TT = TA + 2A + TR
+-> Tarjetas amarillas		TA	-
+-> Segundas tarjetas		2A	-
+-> Tarjetas rojas		TR	-
+Acierto aéreo			DA%	%		DA% = DAG / (DAG + DAP) %
+-> Duelos aéreos ganados	DAG	+
+-> Duelos aéreos perdidos	DAP	-
+Veces superado			VSD	-
+Errores que llevan a gol	ELG	-	<-
+Goles en propia puerta		GPP	-
+
+Balance defensivo		D%	%		D% = DG / (DG + DP) %
+-> Duelos ganados		DG	+		DG = AD + DAG + RB
+-> Duelos perdidos		DP	-	<-	DP = FC + DAP + VS + PB
+
+PORTERÍA
+Goles encajados		GCP	-
+Acierto en paradas		PP%	%		PP% = PP / TCP %
+-> Paradas			PP	+
+-> Tiros a puerta recibidos	TCP	-
+Acierto en penaltis		TPP%	%		TPP% = TPP / (TPC - TPF) %
+-> Penaltis en contra parados	TPP	+
+-> Penaltis en contra fallados	TPF	+
+-> Penaltis en contra cometidos	TPC	-
+Centros intervenidos		CCE	+		CCE = CCP + CCD
+-> Centros atrapados		CCP	+
+-> Centros despejados		CCD	+
+Acierto en mano a mano		DP%	%		DP% = DPG / (DPG + DPP) %
+-> Mano a mano ganados		DPG	+
+-> Mano a mano perdidos		DPP	-
+
+POSESIÓN
+Acierto en pases		P%	%		P% = PC / (PC + PF) %
+-> Pases completados		PC	+	<-
+-> Pases fallados		PF	-
+Retención de posesión	B%	%		B% = RB / PB %
+-> Recuperaciones		RB	+	<-
+-> Pérdidas			PB	-	<-
+Pases progresivos		PP	+
+-> Pases al hueco		PH	+
+Éxito en regate			R%	%
+-> Regates intentados		RI	+
+-> Regates exitosos		RC	+	<-

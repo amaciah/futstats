@@ -1,0 +1,87 @@
+PARTICIPACIÓN
+Partidos                        'games_played'
+Minutos                         'minutes'
+Victorias                       'wins'
+Empates                         'draws'
+Derrotas                        'defeats'
+Puntos                          'points'
+Goles a favor                   'goals_for'
+Goles en contra                 'goals_against'
+Diferencia de goles             'goal_difference' ::= 'goals_for' - 'goals_against'
+Porterías imbatidas             'clean_sheets'
+
+ATAQUE
+Acierto en tiros                'shot_accuracy' ::= 'shots_on_target' / 'shots' %
+-> Tiros totales                'shots'
+-> Tiros a puerta               'shots_on_target'
+Goles                           'goals'
+-> Goles en jugada              'open_play_goals' ::= 'goals' - 'set_piece_goals' - 'penalty_goals'
+Asistencias                     'assists'
+Contribuciones de gol           'goal_contributions' ::= 'goals' + 'assists'
+Pases clave                     'key_passes'
+Acierto en penaltis             'penalty_accuracy' ::= 'penalty_goals' / 'penalty_attempts' %
+-> Goles de penalti             'penalty_goals'
+-> Penaltis lanzados            'penalty_attempts'
+Acierto a balón parado          'set_piece_accuracy' ::= ('set_piece_goals' + 'set_piece_assists') / 'set_piece_attempts' %
+-> Goles a balón parado         'set_piece_goals'
+-> Asistencias a balón parado   'set_piece_assists'
+-> Lanzamientos a balón parado  'set_piece_attempts'
+Acierto en centros              'cross_accuracy' ::= 'crosses' / 'cross_attepts' %
+-> Centros completados          'crosses'
+-> Centros intentados           'cross_attepts'
+Faltas recibidas                'fouls_received'
+-> Penaltis recibidos           'penalties_received'
+
+DEFENSA
+Acierto en entradas             'tackle_accuracy' ::= 'tackles' / 'tackle_attempts' %
+-> Entradas exitosas            'tackles'
+-> Entradas intentadas          'tackle_attempts'
+Acciones defensivas             'defensive_actions' ::= 'blocks' + 'clearances' + 'interceptions'
+-> Bloqueos                     'blocks'
+-> Despejes                     'clearances'
+-> Intercepciones               'interceptions'
+Faltas cometidas                'fouls_commited'
+-> Penaltis cometidos           'penalties_commited'
+Tarjetas recibidas              'cards_received' ::= 'yellow_cards' + 'second_yellow_cards' + 'red_cards'
+-> Tarjetas amarillas           'yellow_cards'
+-> Segundas tarjetas            'second_yellow_cards'
+-> Tarjetas rojas               'red_cards'
+Acierto aéreo                   'aerial_accuracy' ::= 'aerial_duels_won' / ('aerial_duels_won' + 'aerial_duels_lost') %
+-> Duelos aéreos ganados        'aerial_duels_won'
+-> Duelos aéreos perdidos       'aerial_duels_lost'
+Veces superado                  'times_dribbled'
+Errores que llevan a gol        'goal_leading_errors'
+Goles en propia puerta          'own_goals'
+
+Balance defensivo               'defensive_accuracy' ::= 'duels_won' / ('duels_won' + 'duels_lost') %
+-> Duelos ganados               'duels_won' ::= 'defensive_actions' + 'aerial_duels_won' + 'recoveries'
+-> Duelos perdidos              'duels_lost' ::= 'fouls_commited' + 'aerial_duels_lost' + 'times_dribbled' + 'losses'
+
+PORTERÍA
+Goles encajados                 'goals_conceded'
+Acierto en paradas              'shot_stopping_accuracy' ::= 'shots_stopped' / 'shots_on_target_received' %
+-> Paradas                      'shots_stopped'
+-> Tiros a puerta recibidos     'shots_on_target_received'
+Acierto en penaltis             'penalty_stopping_accuracy' ::= 'penalties_against_stopped' / ('penalties_against_commited' - 'penalties_against_missed') %
+-> Penaltis en contra parados   'penalties_against_stopped'
+-> Penaltis en contra fallados  'penalties_against_missed'
+-> Penaltis en contra cometidos 'penalties_against_commited'
+Centros intervenidos            'crosses_intervened' ::= 'crosses_stopped' + 'crosses_cleared'
+-> Centros atrapados            'crosses_stopped'
+-> Centros despejados           'crosses_cleared'
+Acierto en mano a mano          'gk_1v1_accuracy' = 'gk_1v1_won' / ('gk_1v1_won' + 'gk_1v1_lost') %
+-> Mano a mano ganados          'gk_1v1_won'
+-> Mano a mano perdidos         'gk_1v1_lost'
+
+POSESIÓN
+Acierto en pases                'pass_accuracy' = 'passes' / ('passes' + 'passes_missed') %
+-> Pases completados            'passes'
+-> Pases fallados               'passes_missed'
+Retención de posesión           'possession_retention' = 'recoveries' / 'losses'
+-> Recuperaciones               'recoveries'
+-> Pérdidas                     'losses'
+Pases progresivos               'progressive_passes'
+-> Pases al hueco               'through_balls'
+Acierto en regate               'dribble_success' ::= 'dribbles' / 'dribble_attempts' %
+-> Regates exitosos             'dribbles'
+-> Regates intentados           'dribble_attempts'
