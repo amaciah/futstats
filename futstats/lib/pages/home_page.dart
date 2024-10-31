@@ -1,42 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:futstats/models/player.dart';
-import 'package:futstats/models/season.dart';
-import 'package:futstats/pages/add_match_page.dart';
+import 'package:futstats/pages/match_form_page.dart';
 import 'package:futstats/pages/matches_page.dart';
 import 'package:futstats/pages/objectives_page.dart';
 import 'package:futstats/pages/progress_page.dart';
 import 'package:futstats/pages/stats_page.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<HomeScreen> createState() => HomeScreenState();
+  State<HomePage> createState() => HomePageState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
-  static final Player player = Player(
-    id: 'test-player',
-    name: 'Test Player',
-    position: PlayerPosition.midfielder,
-  );
-  static final Season season = Season(id: 'test-season', year: '2024-25');
-
+class HomePageState extends State<HomePage> {
   int _selectedIdx = 0;
   List<Widget> _getPages() {
     return <Widget>[
       const ObjectivesPage(),
-      StatsPage(player: player, season: season),
+      const StatsPage(),
       AddMatchPage(
-        player: player,
-        season: season,
-        onMatchSaved: () {
-          // Navegar a la página de partidos
-          navigateToPage(4);
-        },
+        onReturnToHomePage: () =>
+            navigateToPage(4), // Navegar a la página de partidos
       ),
       const ProgressPage(),
-      MatchesPage(player: player, season: season),
+      MatchesPage(
+        onReturnToHomePage: () => navigateToPage(4), // Actualizar partidos
+      ),
     ];
   }
 

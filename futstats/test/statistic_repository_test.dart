@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:futstats/firebase_options.dart';
 import 'package:futstats/repositories/statistic_repository.dart';
-import 'package:futstats/models/statistic.dart';
 
 void main() {
   setUpAll(() async {
@@ -25,7 +24,7 @@ void main() {
     test('Add Statistic', () async {
       await statisticRepo.setStatistic(testPlayerId, testSeasonId, testStatistic);
       final retrievedStatistic = await statisticRepo.getStatistic(testPlayerId, testSeasonId, testStatistic.id);
-      expect(retrievedStatistic?.value, equals(3.0));
+      expect(retrievedStatistic.value, equals(3.0));
     });
 
     // Obtener partido
@@ -43,7 +42,7 @@ void main() {
       await statisticRepo.setStatistic(testPlayerId, testSeasonId, updatedStatistic);
 
       final retrievedUpdatedStatistic = await statisticRepo.getStatistic(testPlayerId, testSeasonId, updatedStatistic.id);
-      expect(retrievedUpdatedStatistic?.value, equals(5.0));
+      expect(retrievedUpdatedStatistic.value, equals(5.0));
     });
 
     // Obtener todos los partidos de una temporada

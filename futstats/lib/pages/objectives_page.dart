@@ -100,7 +100,7 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Futstats"),
+        title: const Text("Objetivos"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

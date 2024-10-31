@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:futstats/main.dart';
 import 'package:futstats/models/match.dart';
-import 'package:futstats/models/player.dart';
-import 'package:futstats/models/season.dart';
-import 'package:futstats/repositories/match_repository.dart';
+import 'package:futstats/pages/match_details_page.dart';
 import 'package:intl/intl.dart';
 
 class MatchesPage extends StatelessWidget {
-  const MatchesPage({required this.player, required this.season, super.key});
+  const MatchesPage({
+    super.key,
+    required this.onReturnToHomePage,
+  });
 
-  final Player player;
-  final Season season;
+  // Como se diseña como parte de la página principal, la navegación debe
+  // proporcionarse como método
+  final Function onReturnToHomePage;
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +21,14 @@ class MatchesPage extends StatelessWidget {
         title: const Text('Partidos'),
       ),
       body: FutureBuilder<List<Match>>(
-        future: MatchRepository().getAllMatches(player.id, season.id),
+        future: MyApp.matchRepo.getAllMatches(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Error ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No hay partidos disponibles.'));
+            return const Center(child: Text('No hay partidos disponibles'));
           }
 
           final matches = snapshot.data!;
@@ -39,7 +42,12 @@ class MatchesPage extends StatelessWidget {
                     DateFormat.yMd(Localizations.localeOf(context).toString())
                         .format(match.date)),
                 onTap: () {
-                  //TODO: Navegar a la vista de detalles del partido
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MatchDetailsPage(match: match),
+                    ),
+                  ).then((_) => onReturnToHomePage());
                 },
               );
             },

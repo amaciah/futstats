@@ -1,44 +1,108 @@
+import 'package:futstats/main.dart';
+import 'package:futstats/models/match.dart';
+import 'package:futstats/models/objective.dart';
+import 'package:futstats/models/statistics.dart';
 import 'package:uuid/uuid.dart';
-import 'match.dart';
-import 'objective.dart';
 
 var uuid = const Uuid();
 
 class Season {
   Season({
     String? id,
-    required this.year,
-    this.matches = const [],
-    this.seasonStats = const {},
-    this.objectives = const [],
+    required this.startDate,
+    required this.endDate,
+    required this.numMatchweeks,
   }) : id = id ?? uuid.v4();
 
   final String id;
-  final String year;
-  final List<Match> matches;
-  final Map<String, double> seasonStats;
-  final List<Objective> objectives;
+  final DateTime startDate;
+  final DateTime endDate;
+  final int numMatchweeks; // Número de jornadas en la temporada
+
+  // Obtener los partidos de la temporada
+  Future<List<Match>> get matches async => MyApp.matchRepo.getAllMatches();
+
+  // Obtener las estadísticas acumuladas de la temporada
+  Future<Map<String, double>> get statistics async =>
+      await MyApp.statsRepo.getSeasonStatistics();
+
+  // Obtener los objetivos de la temporada
+  Future<List<Objective>> get objectives async =>
+      MyApp.objRepo.getAllObjectives();
+
+  Future<void> addMatch(Match match) async {
+    // Guardar partido en Firestore
+    await MyApp.matchRepo.setMatch(match);
+    // Actualizar estadísticas acumuladas
+    updateSeasonStats(match);
+  }
+
+  Future<void> deleteMatch(Match match) async {
+    // Actualizar estadísticas acumuladas
+    updateSeasonStats(match, isMatchRemoved: true);
+    // Eliminar partido en Firestore
+    await MyApp.matchRepo.deleteMatch(match.id);
+  }
+
+  Future<void> updateMatch({
+    required Match oldMatch,
+    required Match newMatch,
+  }) async {
+    // Actualizar estadísticas acumuladas
+    updateSeasonStats(oldMatch, isMatchRemoved: true);
+    updateSeasonStats(newMatch);
+    // Actualizar partido en Firestore
+    await MyApp.matchRepo.setMatch(newMatch);
+  }
+
+  void updateSeasonStats(Match match, {bool isMatchRemoved = false}) async {
+    final Function(String, double) update = isMatchRemoved
+        ? MyApp.statsRepo.decrementStatistic
+        : MyApp.statsRepo.incrementStatistic;
+
+    // Actualizar estadísticas de participación
+    update('games_played', 1);
+    update('goals_for', match.goalsFor.toDouble());
+    update('goals_against', match.goalsAgainst.toDouble());
+    update('clean_sheets', match.goalsAgainst == 0 ? 1 : 0);
+    update('points', match.result.points.toDouble());
+    switch (match.result) {
+      case MatchResult.win:
+        update('wins', 1);
+        break;
+      case MatchResult.draw:
+        update('draws', 1);
+        break;
+      case MatchResult.loss:
+        update('defeats', 1);
+        break;
+    }
+
+    // Actualizar estadísticas manuales
+    for (var statId in StatTemplates.manualStatIds) {
+      update(statId, match.stats[statId] ?? 0);
+    }
+
+    // Calcular estadísticas automáticas
+    StatFormulas.calculateSeasonStats(await statistics);
+  }
 
   // Serialización para Firestore
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'year': year,
-      'matches': matches.map((match) => match.toMap()).toList(),
-      'seasonStats': seasonStats,
-      'objectives': objectives.map((objective) => objective.toMap()).toList(),
+      'start': startDate.toIso8601String(),
+      'end': endDate.toIso8601String(),
+      'matchweeks': numMatchweeks,
     };
   }
 
   factory Season.fromMap(Map<String, dynamic> map) {
     return Season(
       id: map['id'],
-      year: map['year'],
-      matches: List<Match>.from(
-          map['matches'].map((matchMap) => Match.fromMap(matchMap))),
-      seasonStats: Map<String, double>.from(map['seasonStats']),
-      objectives: List<Objective>.from(
-          map['objectives'].map((objMap) => Objective.fromMap(objMap))),
+      startDate: map['start'],
+      endDate: map['end'],
+      numMatchweeks: map['matchweeks'],
     );
   }
 }

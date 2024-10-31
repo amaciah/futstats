@@ -85,3 +85,4 @@ Pases progresivos               'progressive_passes'
 Acierto en regate               'dribble_success' ::= 'dribbles' / 'dribble_attempts' %
 -> Regates exitosos             'dribbles'
 -> Regates intentados           'dribble_attempts'
+Conducciones                    'progressive_carries'

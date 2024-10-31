@@ -1,5 +1,4 @@
 import 'package:futstats/models/objective.dart';
-import 'package:futstats/models/statistic.dart';
 import 'package:test/test.dart';
 
 void main() {

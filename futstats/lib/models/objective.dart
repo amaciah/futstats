@@ -1,3 +1,4 @@
+import 'package:futstats/main.dart';
 import 'package:uuid/uuid.dart';
 
 enum ObjectiveType { positive, negative }
@@ -17,9 +18,10 @@ class Objective {
   final double target;
   final bool isPositive;
 
-  bool get isTargetMet {
-    throw UnimplementedError();
-    // isPositive ? stat.value >= target : stat.value <= target;
+  Future<double> get stat async => await MyApp.statsRepo.getStatistic(statId);
+  Future<bool> get isTargetMet async {
+    var value = await stat;
+    return isPositive ? value >= target : value <= target;
   }
 
   // Serialización para Firestore

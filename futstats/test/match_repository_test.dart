@@ -14,8 +14,10 @@ void main() {
 
   group('MatchRepository CRUD Operations', () {
     final matchRepo = MatchRepository();
-    final testPlayerId = 'test-player-id'; // Asegúrate de tener este jugador creado
-    final testSeasonId = 'test-season-id'; // Asegúrate de tener esta temporada creada
+    final testPlayerId =
+        'test-player-id'; // Asegúrate de tener este jugador creado
+    final testSeasonId =
+        'test-season-id'; // Asegúrate de tener esta temporada creada
     final testMatch = Match(
       matchweek: 1,
       date: DateTime.now(),
@@ -26,13 +28,15 @@ void main() {
     // Agregar partido
     test('Add Match', () async {
       await matchRepo.setMatch(testPlayerId, testSeasonId, testMatch);
-      final retrievedMatch = await matchRepo.getMatch(testPlayerId, testSeasonId, testMatch.id);
+      final retrievedMatch =
+          await matchRepo.getMatch(testPlayerId, testSeasonId, testMatch.id);
       expect(retrievedMatch?.opponent, equals('Team A'));
     });
 
     // Obtener partido
     test('Get Match by ID', () async {
-      final retrievedMatch = await matchRepo.getMatch(testPlayerId, testSeasonId, testMatch.id);
+      final retrievedMatch =
+          await matchRepo.getMatch(testPlayerId, testSeasonId, testMatch.id);
       expect(retrievedMatch, isNotNull);
       expect(retrievedMatch?.opponent, equals('Team A'));
     });
@@ -48,20 +52,23 @@ void main() {
       );
       await matchRepo.setMatch(testPlayerId, testSeasonId, updatedMatch);
 
-      final retrievedUpdatedMatch = await matchRepo.getMatch(testPlayerId, testSeasonId, updatedMatch.id);
+      final retrievedUpdatedMatch =
+          await matchRepo.getMatch(testPlayerId, testSeasonId, updatedMatch.id);
       expect(retrievedUpdatedMatch?.opponent, equals('Team B'));
     });
 
     // Obtener todos los partidos de una temporada
     test('Get All Matches for Season', () async {
-      final allMatches = await matchRepo.getAllMatches(testPlayerId, testSeasonId);
+      final allMatches =
+          await matchRepo.getAllMatches(testPlayerId, testSeasonId);
       expect(allMatches.length, greaterThanOrEqualTo(1));
     });
 
     // Eliminar partido
     test('Delete Match', () async {
       await matchRepo.deleteMatch(testPlayerId, testSeasonId, testMatch.id);
-      final deletedMatch = await matchRepo.getMatch(testPlayerId, testSeasonId, testMatch.id);
+      final deletedMatch =
+          await matchRepo.getMatch(testPlayerId, testSeasonId, testMatch.id);
       expect(deletedMatch, isNull);
     });
   });
