@@ -183,8 +183,8 @@ abstract class _MatchFormPageState extends State<MatchFormPage> {
                   context: context,
                   locale: Localizations.localeOf(context),
                   initialDate: _date,
-                  firstDate: MyApp.season.startDate,
-                  lastDate: MyApp.season.endDate,
+                  firstDate: DateTime(MyApp.season.startDate),
+                  lastDate: DateTime(MyApp.season.endDate + 1),
                 );
                 if (selectedDate != null) {
                   setState(() {

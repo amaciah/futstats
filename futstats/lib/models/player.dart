@@ -4,7 +4,26 @@ import 'package:uuid/uuid.dart';
 
 var uuid = const Uuid();
 
-enum PlayerPosition { goalkeeper, defender, midfielder, attacker }
+enum PlayerPosition {
+  goalkeeper,
+  defender,
+  midfielder,
+  attacker;
+
+  // Getter para obtener la etiqueta
+  String get label {
+    switch (this) {
+      case PlayerPosition.goalkeeper:
+        return 'Portero';
+      case PlayerPosition.defender:
+        return 'Defensor';
+      case PlayerPosition.midfielder:
+        return 'Centrocampista';
+      case PlayerPosition.attacker:
+        return 'Atacante';
+    }
+  }
+}
 
 class Player {
   Player({
@@ -19,14 +38,23 @@ class Player {
   final DateTime birth;
   final PlayerPosition position;
 
-  late String _currentSeason;
+  String? _currentSeason;
 
   // Obtener las temporadas del jugador
-  Future<List<Season>> get seasons async => MyApp.seasonRepo.getAllSeasons();
+  Future<List<Season>> get seasons async =>
+      await MyApp.seasonRepo.getAllSeasons();
 
   // Obtener la temporada actual del jugador
-  Future<Season?> get currentSeason async =>
-      MyApp.seasonRepo.getSeason(_currentSeason);
+  Future<Season?> get currentSeason async => _currentSeason == null
+      ? null
+      : await MyApp.seasonRepo.getSeason(_currentSeason!);
+
+  void setCurrentSeason(String seasonId) async {
+    _currentSeason = seasonId;
+    await _savePlayer();
+  }
+
+  Future<void> _savePlayer() async => await MyApp.playerRepo.setPlayer(this);
 
   // Serialización para Firestore
   Map<String, dynamic> toMap() {

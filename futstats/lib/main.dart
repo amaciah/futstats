@@ -1,10 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:futstats/firebase_options.dart';
-import 'package:futstats/pages/home_page.dart';
 import 'package:futstats/models/player.dart';
 import 'package:futstats/models/season.dart';
+import 'package:futstats/pages/auth_page.dart';
 import 'package:futstats/repositories/match_repository.dart';
 import 'package:futstats/repositories/objective_repository.dart';
 import 'package:futstats/repositories/player_repository.dart';
@@ -30,8 +31,8 @@ class MyApp extends StatelessWidget {
   );
   static Season season = Season(
     id: 'test-season',
-    startDate: DateTime(2023),
-    endDate: DateTime(2024 + 1),
+    startDate: 2023,
+    endDate: 2024,
     numMatchweeks: 10,
   );
   static PlayerRepository get playerRepo => PlayerRepository();
@@ -48,15 +49,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Fútbol Stats',
-      localizationsDelegates: const [
+      localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+        FirebaseUILocalizations.delegate,
       ],
       supportedLocales: const [
-        Locale('en', 'US'),
-        Locale('en', 'UK'),
-        Locale('es', 'ES'),
+        Locale('en'),
+        Locale('es'),
       ],
       theme: ThemeData(
         // This is the theme of your application.
@@ -66,7 +67,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const AuthPage(),
     );
   }
 }

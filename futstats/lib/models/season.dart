@@ -15,12 +15,16 @@ class Season {
   }) : id = id ?? uuid.v4();
 
   final String id;
-  final DateTime startDate;
-  final DateTime endDate;
+  final int startDate;
+  final int endDate;
   final int numMatchweeks; // Número de jornadas en la temporada
 
+  String get date =>
+      startDate == endDate ? '$startDate' : '$startDate-$endDate';
+
   // Obtener los partidos de la temporada
-  Future<List<Match>> get matches async => MyApp.matchRepo.getAllMatches();
+  Future<List<Match>> get matches async =>
+      await MyApp.matchRepo.getAllMatches();
 
   // Obtener las estadísticas acumuladas de la temporada
   Future<Map<String, double>> get statistics async =>
@@ -28,7 +32,7 @@ class Season {
 
   // Obtener los objetivos de la temporada
   Future<List<Objective>> get objectives async =>
-      MyApp.objRepo.getAllObjectives();
+      await MyApp.objRepo.getAllObjectives();
 
   Future<void> addMatch(Match match) async {
     // Guardar partido en Firestore
@@ -91,8 +95,8 @@ class Season {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'start': startDate.toIso8601String(),
-      'end': endDate.toIso8601String(),
+      'start': startDate,
+      'end': endDate,
       'matchweeks': numMatchweeks,
     };
   }

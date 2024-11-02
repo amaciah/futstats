@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:futstats/pages/match_form_page.dart';
 import 'package:futstats/pages/matches_page.dart';
@@ -13,6 +14,8 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  final _auth = FirebaseAuth.instance;
+
   int _selectedIdx = 0;
   List<Widget> _getPages() {
     return <Widget>[
@@ -33,6 +36,10 @@ class HomePageState extends State<HomePage> {
     setState(() {
       _selectedIdx = index;
     });
+  }
+
+  Future<void> _signOut(BuildContext context) async {
+    await _auth.signOut();
   }
 
   @override
@@ -66,6 +73,30 @@ class HomePageState extends State<HomePage> {
             label: "Partidos",
           ),
         ],
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            // Encabezado del Drawer con información del usuario
+            UserAccountsDrawerHeader(
+              accountName: Text(_auth.currentUser?.displayName ?? 'Usuario'),
+              accountEmail: Text(_auth.currentUser?.email ?? 'No hay correo'),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Theme.of(context).canvasColor,
+                child: Text(
+                  _auth.currentUser?.email?.substring(0, 0).toUpperCase() ?? '?',
+                  style: Theme.of(context).textTheme.displayLarge,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Cerrar sesión'),
+              onTap: () => _signOut(context),
+            ),
+          ],
+        ),
       ),
     );
   }
