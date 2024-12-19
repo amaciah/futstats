@@ -28,11 +28,12 @@ class MatchRepository {
   Future<void> deleteMatch(String matchId) async =>
       await _firestoreService.deleteDocument(collectionPath, matchId);
 
-  // Obtener todos los partidos de una temporada
+  // Obtener todos los partidos de una temporada, ordenados por jornada
   Future<List<Match>> getAllMatches() async {
     var querySnapshot = await _firestoreService.getCollection(collectionPath);
     return querySnapshot.docs
         .map((doc) => Match.fromMap(doc.data() as Map<String, dynamic>))
-        .toList();
+        .toList()
+      ..sort((m1, m2) => m1.matchweek.compareTo(m2.matchweek));
   }
 }

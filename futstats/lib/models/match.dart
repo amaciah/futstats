@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:futstats/models/statistics.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,6 +18,18 @@ enum MatchResult {
         return 1;
       case MatchResult.loss:
         return 0;
+    }
+  }
+
+  // Getter para obtener el color
+  Color get color {
+    switch (this) {
+      case MatchResult.win:
+        return Colors.green;
+      case MatchResult.draw:
+        return Colors.grey;
+      case MatchResult.loss:
+        return Colors.red;
     }
   }
 }

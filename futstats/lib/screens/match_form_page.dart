@@ -2,105 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:futstats/main.dart';
 import 'package:futstats/models/match.dart';
 import 'package:futstats/models/statistics.dart';
-import 'package:futstats/pages/match_details_page.dart';
-import 'package:intl/intl.dart';
+import 'package:futstats/widgets/date_picker_field.dart';
 
-abstract class MatchFormPage extends StatefulWidget {
+class MatchFormPage extends StatefulWidget {
   const MatchFormPage({
     super.key,
     this.match,
+    required this.saveMatch,
+    required this.onMatchSaved,
+    this.appBarLeading,
   });
 
   // Nulo cuando se crea un partido nuevo
-  // Ahorra código para inicializar las variables para el formulario
+  // Permite inicializar las variables para el formulario
   final Match? match;
-}
-
-class AddMatchPage extends MatchFormPage {
-  const AddMatchPage({
-    super.key,
-    required this.onReturnToHomePage,
-  });
-
-  // Como se diseña como parte de la página principal, la navegación debe
-  // proporcionarse como método
-  final Function onReturnToHomePage;
+  final Future<void> Function({Match? oldMatch, required Match newMatch})
+      saveMatch;
+  final void Function(Match newMatch) onMatchSaved;
+  final Widget? appBarLeading;
 
   @override
-  State<MatchFormPage> createState() => _AddMatchPageState();
+  State<MatchFormPage> createState() => _MatchFormPageState();
 }
 
-class EditMatchPage extends MatchFormPage {
-  const EditMatchPage({
-    super.key,
-    required Match match,
-  }) : _match = match;
-
-  final Match _match;
-
-  @override
-  Match get match => _match;
-
-  @override
-  State<MatchFormPage> createState() => _EditMatchPageState();
-}
-
-class _AddMatchPageState extends _MatchFormPageState {
-  @override
-  Future<void> _saveMatch() async {
-    final newMatch = Match(
-      matchweek: _matchweek!,
-      date: _date,
-      opponent: _opponent!,
-      goalsFor: _goalsFor!,
-      goalsAgainst: _goalsAgainst!,
-      stats: _stats,
-    );
-    await MyApp.season.addMatch(newMatch);
-    _onMatchCreated(newMatch);
-  }
-
-  void _onMatchCreated(Match match) {
-    // Navegar a la página de detalles del partido
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MatchDetailsPage(match: match),
-      ),
-    ).then(
-      // Aplicar navegación al volver a la pantalla principal
-      (_) => (widget as AddMatchPage).onReturnToHomePage(),
-    );
-  }
-}
-
-class _EditMatchPageState extends _MatchFormPageState {
-  @override
-  Future<void> _saveMatch() async {
-    final match = Match(
-      id: widget.match!.id,
-      matchweek: _matchweek!,
-      date: _date,
-      opponent: _opponent!,
-      goalsFor: _goalsFor!,
-      goalsAgainst: _goalsAgainst!,
-      stats: _stats,
-    );
-    await MyApp.season.updateMatch(
-      oldMatch: widget.match!,
-      newMatch: match,
-    );
-    _onMatchUpdated(match);
-  }
-
-  void _onMatchUpdated(Match match) {
-    Navigator.pop(context, match);
-  }
-}
-
-abstract class _MatchFormPageState extends State<MatchFormPage> {
+class _MatchFormPageState extends State<MatchFormPage> {
+  // Variables para el formulario
   final _formKey = GlobalKey<FormState>();
-  int _currentStep = 0; // Paso del formulario
+  int _currentStep = 0;
 
   // Variables para el paso 1
   late int? _matchweek = widget.match?.matchweek;
@@ -136,7 +64,22 @@ abstract class _MatchFormPageState extends State<MatchFormPage> {
   }
 
   // Guardar el partido en Firestore
-  Future<void> _saveMatch();
+  Future<void> _saveMatch() async {
+    final newMatch = Match(
+      id: widget.match?.id,
+      matchweek: _matchweek!,
+      date: _date,
+      opponent: _opponent!,
+      goalsFor: _goalsFor!,
+      goalsAgainst: _goalsAgainst!,
+      stats: _stats,
+    );
+    await widget.saveMatch(
+      oldMatch: widget.match,
+      newMatch: newMatch,
+    );
+    widget.onMatchSaved(newMatch);
+  }
 
   // Formulario para el primer paso
   Widget _buildStepOneForm() {
@@ -151,13 +94,13 @@ abstract class _MatchFormPageState extends State<MatchFormPage> {
             DropdownButtonFormField<int>(
               value: _matchweek,
               decoration: const InputDecoration(labelText: 'Semana de partido'),
-              items:
-                  List<int>.generate(MyApp.season.numMatchweeks, (i) => i + 1)
-                      .map((week) => DropdownMenuItem<int>(
-                            value: week,
-                            child: Text('Semana $week'),
-                          ))
-                      .toList(),
+              items: List<int>.generate(
+                      MyApp.season.numMatchweeks, (i) => i + 1)
+                  .map((week) => DropdownMenuItem<int>(
+                        value: week,
+                        child: Text('Semana $week'),
+                      ))
+                  .toList(),
               onChanged: (value) {
                 setState(() {
                   _matchweek = value;
@@ -177,33 +120,16 @@ abstract class _MatchFormPageState extends State<MatchFormPage> {
             ),
 
             // Fecha
-            InkWell(
-              onTap: () async {
-                final selectedDate = await showDatePicker(
-                  context: context,
-                  locale: Localizations.localeOf(context),
-                  initialDate: _date,
-                  firstDate: DateTime(MyApp.season.startDate),
-                  lastDate: DateTime(MyApp.season.endDate + 1),
-                );
-                if (selectedDate != null) {
-                  setState(() {
-                    _date = selectedDate;
-                  });
-                }
+            DatePickerField(
+              initialDate: _date,
+              firstDate: DateTime(MyApp.season.startDate),
+              lastDate: DateTime(MyApp.season.endDate + 1),
+              labelText: 'Fecha',
+              onDateSelected: (selectedDate) {
+                setState(() {
+                  _date = selectedDate;
+                });
               },
-              child: InputDecorator(
-                decoration: InputDecoration(labelText: 'Fecha'),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(DateFormat.yMd(
-                            Localizations.localeOf(context).toString())
-                        .format(_date)),
-                    Icon(Icons.calendar_month),
-                  ],
-                ),
-              ),
             ),
 
             // Resultado
@@ -281,7 +207,7 @@ abstract class _MatchFormPageState extends State<MatchFormPage> {
                 onPressed: _previousStep,
                 icon: const Icon(Icons.arrow_back),
               )
-            : null,
+            : widget.appBarLeading,
       ),
       body: _currentStep == 0 ? _buildStepOneForm() : _buildStepTwoForm(),
       floatingActionButton: FloatingActionButton(

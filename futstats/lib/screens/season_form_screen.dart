@@ -2,28 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:futstats/main.dart';
 import 'package:futstats/models/season.dart';
 
-class SeasonFormPage extends StatefulWidget {
-  const SeasonFormPage({super.key});
+class SeasonFormScreen extends StatefulWidget {
+  const SeasonFormScreen({super.key, this.season});
+
+  final Season? season;
 
   @override
-  State<SeasonFormPage> createState() => _SeasonFormPageState();
+  State<SeasonFormScreen> createState() => _SeasonFormScreenState();
 }
 
-class _SeasonFormPageState extends State<SeasonFormPage> {
+class _SeasonFormScreenState extends State<SeasonFormScreen> {
+  // Variables para el formulario
   final _formKey = GlobalKey<FormState>();
-  late int _startDate = DateTime.now().year;
-  late int _endDate = _startDate + 1;
-  int? _matchweeks;
+  late int _startDate = widget.season?.startDate ?? DateTime.now().year;
+  late int _endDate = widget.season?.endDate ?? _startDate + 1;
+  late int? _matchweeks = widget.season?.numMatchweeks;
 
   Future<void> _saveSeason() async {
     final season = Season(
+      id: widget.season?.id,
       startDate: _startDate,
       endDate: _endDate,
       numMatchweeks: _matchweeks!,
     );
-    MyApp.season = season;
+    await MyApp.setSeason(season);
     await MyApp.seasonRepo.setSeason(season);
-    Navigator.pop(context);
   }
 
   @override
@@ -62,12 +65,13 @@ class _SeasonFormPageState extends State<SeasonFormPage> {
               DropdownButtonFormField<int>(
                 value: _endDate,
                 decoration: const InputDecoration(labelText: 'Año de fin'),
-                items: List<int>.generate(50, (i) => DateTime.now().year + 1 - i)
-                    .map((year) => DropdownMenuItem<int>(
-                          value: year,
-                          child: Text('$year'),
-                        ))
-                    .toList(),
+                items:
+                    List<int>.generate(50, (i) => DateTime.now().year + 1 - i)
+                        .map((year) => DropdownMenuItem<int>(
+                              value: year,
+                              child: Text('$year'),
+                            ))
+                        .toList(),
                 onChanged: (value) {
                   setState(() {
                     _endDate = value!;
@@ -80,6 +84,7 @@ class _SeasonFormPageState extends State<SeasonFormPage> {
 
               // Número de jornadas
               TextFormField(
+                initialValue: _matchweeks?.toString(),
                 decoration: const InputDecoration(labelText: 'Nº de jornadas'),
                 keyboardType: TextInputType.number,
                 onSaved: (value) => _matchweeks = int.tryParse(value ?? '0'),
@@ -92,11 +97,14 @@ class _SeasonFormPageState extends State<SeasonFormPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.arrow_forward),
-        onPressed: () {
+        child: const Icon(Icons.save),
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
-            _saveSeason();
+            await _saveSeason();
+            if (context.mounted) {
+              Navigator.pop(context, true);
+            }
           }
         },
       ),

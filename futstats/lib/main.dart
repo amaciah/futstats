@@ -1,19 +1,24 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:futstats/firebase_options.dart';
 import 'package:futstats/models/player.dart';
 import 'package:futstats/models/season.dart';
-import 'package:futstats/pages/auth_page.dart';
+import 'package:futstats/screens/auth_gate.dart';
 import 'package:futstats/repositories/match_repository.dart';
 import 'package:futstats/repositories/objective_repository.dart';
 import 'package:futstats/repositories/player_repository.dart';
 import 'package:futstats/repositories/season_repository.dart';
 import 'package:futstats/repositories/statistic_repository.dart';
+import 'package:futstats/widgets/exit_confirm_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -29,20 +34,27 @@ class MyApp extends StatelessWidget {
     birth: DateTime.now(),
     position: PlayerPosition.midfielder,
   );
-  static Season season = Season(
+  static Season _season = Season(
     id: 'test-season',
     startDate: 2023,
     endDate: 2024,
     numMatchweeks: 10,
   );
+
   static PlayerRepository get playerRepo => PlayerRepository();
   static SeasonRepository get seasonRepo =>
       SeasonRepository(playerId: player.id);
-  static MatchRepository get matchRepo => MatchRepository(seasonId: season.id);
+  static MatchRepository get matchRepo => MatchRepository(seasonId: _season.id);
   static StatisticRepository get statsRepo =>
-      StatisticRepository(seasonId: season.id);
+      StatisticRepository(seasonId: _season.id);
   static ObjectiveRepository get objRepo =>
-      ObjectiveRepository(seasonId: season.id);
+      ObjectiveRepository(seasonId: _season.id);
+
+  static Season get season => _season;
+  static Future<void> setSeason(Season season) async {
+    _season = season;
+    await player.setCurrentSeason(season.id);
+  }
 
   // This widget is the root of your application.
   @override
@@ -67,7 +79,9 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const AuthPage(),
+      home: const ExitConfirmWrapper(
+        child: AuthGate(),
+      ),
     );
   }
 }

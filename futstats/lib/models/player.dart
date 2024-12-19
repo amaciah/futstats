@@ -49,7 +49,7 @@ class Player {
       ? null
       : await MyApp.seasonRepo.getSeason(_currentSeason!);
 
-  void setCurrentSeason(String seasonId) async {
+  Future<void> setCurrentSeason(String seasonId) async {
     _currentSeason = seasonId;
     await _savePlayer();
   }

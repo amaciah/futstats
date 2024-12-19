@@ -2,23 +2,32 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:futstats/main.dart';
 import 'package:futstats/models/player.dart';
-import 'package:futstats/pages/seasons_page.dart';
-import 'package:intl/intl.dart';
+import 'package:futstats/widgets/date_picker_field.dart';
 
-class PlayerFormPage extends StatefulWidget {
-  const PlayerFormPage({super.key});
+class PlayerFormScreen extends StatefulWidget {
+  const PlayerFormScreen({
+    super.key,
+    this.player,
+    required this.icon,
+    required this.onPlayerSaved,
+  });
+
+  final Player? player;
+  final Icon icon;
+  final Function onPlayerSaved;
 
   @override
-  State<StatefulWidget> createState() => _PlayerFormPageState();
+  State<StatefulWidget> createState() => _PlayerFormScreenState();
 }
 
-class _PlayerFormPageState extends State<PlayerFormPage> {
+class _PlayerFormScreenState extends State<PlayerFormScreen> {
+  // Variables para el formulario
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  DateTime _birth = DateTime.now();
-  PlayerPosition? _position;
+  late final _nameController = TextEditingController(text: widget.player?.name);
+  late DateTime _birth = widget.player?.birth ?? DateTime.now();
+  late PlayerPosition? _position = widget.player?.position;
 
-  Future<void> _savePlayer() async {
+  void _savePlayer() async {
     if (_formKey.currentState!.validate()) {
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final player = Player(
@@ -27,12 +36,13 @@ class _PlayerFormPageState extends State<PlayerFormPage> {
         birth: _birth,
         position: _position!,
       );
+      final currentSeason = await widget.player?.currentSeason;
+      if (currentSeason != null) {
+        await player.setCurrentSeason(currentSeason.id);
+      }
       MyApp.player = player;
-      await MyApp.playerRepo.setPlayer(player);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const SeasonsPage()),
-      );
+      MyApp.playerRepo.setPlayer(player);
+      widget.onPlayerSaved();
     }
   }
 
@@ -59,38 +69,22 @@ class _PlayerFormPageState extends State<PlayerFormPage> {
               ),
 
               // Fecha de nacimiento
-              InkWell(
-                onTap: () async {
-                  final selectedDate = await showDatePicker(
-                    context: context,
-                    locale: Localizations.localeOf(context),
-                    initialDate: _birth,
-                    firstDate: DateTime(1950),
-                    lastDate: DateTime.now(),
-                  );
-                  if (selectedDate != null) {
-                    setState(() {
-                      _birth = selectedDate;
-                    });
-                  }
+              DatePickerField(
+                initialDate: _birth,
+                firstDate: DateTime(1950),
+                lastDate: DateTime.now(),
+                labelText: 'Fecha de nacimiento',
+                onDateSelected: (selectedDate) {
+                  setState(() {
+                    _birth = selectedDate;
+                  });
                 },
-                child: InputDecorator(
-                  decoration: InputDecoration(labelText: 'Fecha de nacimiento'),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(DateFormat.yMd(
-                              Localizations.localeOf(context).toString())
-                          .format(_birth)),
-                      Icon(Icons.calendar_month),
-                    ],
-                  ),
-                ),
               ),
 
               // Posición
               DropdownButtonFormField(
-                decoration: InputDecoration(labelText: 'Posición'),
+                value: _position,
+                decoration: const InputDecoration(labelText: 'Posición'),
                 items: PlayerPosition.values
                     .map((position) => DropdownMenuItem(
                           value: position,
@@ -110,7 +104,7 @@ class _PlayerFormPageState extends State<PlayerFormPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.arrow_forward),
+        child: widget.icon,
         onPressed: () => _savePlayer(),
       ),
     );
