@@ -26,20 +26,24 @@ class SeasonsScreen extends StatelessWidget {
         itemBuilder: (context, season) {
           return ListTile(
             title: Text('Temporada ${season.date}'),
+            trailing: IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () async {
+                bool shouldReload = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SeasonFormScreen(season: season),
+                      ),
+                    ) ??
+                    false;
+                if (shouldReload) {
+                  controller.reload();
+                }
+              },
+            ),
             onTap: () async {
               await MyApp.setSeason(season);
               onSeasonSelected();
-            },
-            onLongPress: () async {
-              bool shouldReload = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SeasonFormScreen(season: season),
-                ),
-              ) ?? false;
-              if (shouldReload) {
-                controller.reload();
-              }
             },
           );
         },
@@ -48,9 +52,10 @@ class SeasonsScreen extends StatelessWidget {
         child: Icon(Icons.add),
         onPressed: () async {
           bool shouldReload = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SeasonFormScreen()),
-          ) ?? false;
+                context,
+                MaterialPageRoute(builder: (context) => SeasonFormScreen()),
+              ) ??
+              false;
           if (shouldReload) {
             controller.reload();
           }

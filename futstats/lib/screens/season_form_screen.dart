@@ -46,12 +46,13 @@ class _SeasonFormScreenState extends State<SeasonFormScreen> {
               DropdownButtonFormField<int>(
                 value: _startDate,
                 decoration: const InputDecoration(labelText: 'Año de inicio'),
-                items: List<int>.generate(50, (i) => DateTime.now().year - i)
-                    .map((year) => DropdownMenuItem<int>(
-                          value: year,
-                          child: Text('$year'),
-                        ))
-                    .toList(),
+                items:
+                    List<int>.generate(50, (i) => DateTime.now().year + 1 - i)
+                        .map((year) => DropdownMenuItem<int>(
+                              value: year,
+                              child: Text('$year'),
+                            ))
+                        .toList(),
                 onChanged: (value) {
                   setState(() {
                     _startDate = value!;

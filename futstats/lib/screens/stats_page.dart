@@ -37,7 +37,10 @@ class _StatsPageState extends State<StatsPage> {
           }
 
           final stats = snapshot.data!;
-          return StatDisplay(stats: stats);
+          return Padding(
+            padding: const EdgeInsets.all(8),
+            child: StatDisplay(stats: stats),
+          );
         },
       ),
     );
