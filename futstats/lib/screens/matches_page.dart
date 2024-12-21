@@ -31,7 +31,7 @@ class MatchesPage extends StatelessWidget {
                       builder: (context) => MatchDetailsScreen(match: match),
                     ),
                   ) ??
-                  false;
+                  true;
               if (shouldReload) {
                 controller.reload();
               }

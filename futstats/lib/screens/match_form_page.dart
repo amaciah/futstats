@@ -99,16 +99,16 @@ class _MatchFormPageState extends State<MatchFormPage> {
 
           // Fecha
           DatePickerField(
-            initialDate: _date,
-            firstDate: DateTime(MyApp.season.startDate),
-            lastDate: DateTime(MyApp.season.endDate + 1),
-            labelText: 'Fecha',
-            onDateSelected: (selectedDate) {
-              setState(() {
-                _date = selectedDate;
-              });
-            },
-          ),
+              initialDate: _date,
+              firstDate: DateTime(_date.year - 5),
+              lastDate: DateTime(_date.year + 5),
+              labelText: 'Fecha',
+              onDateSelected: (selectedDate) {
+                setState(() {
+                  _date = selectedDate;
+                });
+              },
+            ),
 
           // Resultado
           Row(
@@ -187,6 +187,15 @@ class _MatchFormPageState extends State<MatchFormPage> {
     );
   }
 
+  Step _buildConfirmStep() {
+    return Step(
+      title: const Text('Guardar partido'),
+      isActive: _currentStep == _categories.length + 1,
+      state: StepState.indexed,
+      content: const Center(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,7 +211,7 @@ class _MatchFormPageState extends State<MatchFormPage> {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
               setState(() {
-                if (_currentStep < _categories.length) {
+                if (_currentStep <= _categories.length) {
                   _currentStep++;
                 } else {
                   _saveMatch();
@@ -231,6 +240,7 @@ class _MatchFormPageState extends State<MatchFormPage> {
           steps: [
             _buildGeneralInfoStep(),
             ..._categories.map((category) => _buildStatsStep(category)),
+            _buildConfirmStep(),
           ],
           controlsBuilder: (context, details) {
             return Padding(
@@ -245,10 +255,10 @@ class _MatchFormPageState extends State<MatchFormPage> {
                   ),
                   FilledButton.icon(
                     onPressed: details.onStepContinue,
-                    label: _currentStep == _categories.length
+                    label: _currentStep == _categories.length + 1
                         ? const Text('Guardar')
                         : const Text('Siguiente'),
-                    icon: _currentStep == _categories.length
+                    icon: _currentStep == _categories.length + 1
                         ? const Icon(Icons.save)
                         : const Icon(Icons.arrow_forward),
                   ),

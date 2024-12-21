@@ -20,6 +20,7 @@ class MatchDetailsScreen extends StatefulWidget {
 
 class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
   late Match _match;
+  late bool _matchChanged = false;
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
     if (updatedMatch != null) {
       setState(() {
         _match = updatedMatch;
+        _matchChanged = true;
       });
     }
   }
@@ -86,41 +88,48 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Jornada ${_match.matchweek}'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: _editMatch,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: _deleteMatch,
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Mostrar información general del partido
-            ListTile(
-              title: Text(_match.opponent),
-              titleTextStyle: Theme.of(context).textTheme.headlineSmall,
-              subtitle: Text(
-                  DateFormat.yMd(Localizations.localeOf(context).toString())
-                      .format(_match.date)),
-              trailing: MatchResultDisplay(match: _match),
+    return PopScope<bool>(
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pop(context, _matchChanged);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Jornada ${_match.matchweek}'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: _editMatch,
             ),
-            const Divider(height: 32),
-
-            // Mostrar estadísticas del partido
-            Expanded(
-              child: StatDisplay(stats: _match.stats),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: _deleteMatch,
             ),
           ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Mostrar información general del partido
+              ListTile(
+                title: Text(_match.opponent),
+                titleTextStyle: Theme.of(context).textTheme.headlineSmall,
+                subtitle: Text(
+                    DateFormat.yMd(Localizations.localeOf(context).toString())
+                        .format(_match.date)),
+                trailing: MatchResultDisplay(match: _match),
+              ),
+              const Divider(height: 32),
+
+              // Mostrar estadísticas del partido
+              Expanded(
+                child: StatDisplay(stats: _match.stats),
+              ),
+            ],
+          ),
         ),
       ),
     );

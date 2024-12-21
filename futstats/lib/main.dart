@@ -78,6 +78,15 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
+        navigationBarTheme: NavigationBarThemeData(
+          labelTextStyle: WidgetStatePropertyAll(
+            TextStyle(
+              overflow: TextOverflow.ellipsis,
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
+          ),
+        ),
       ),
       home: const ExitConfirmWrapper(
         child: AuthGate(),
