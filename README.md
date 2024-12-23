@@ -42,7 +42,7 @@ Con **Futstats**, llevar el control de tu rendimiento futbolístico es más fác
 # **Instalación**
 
 ## **Cómo instalar un archivo APK**
-1. **Descarga el archivo APK**: Obtén el archivo APK desde el repositorio proporcionado.
+1. **Descarga el archivo APK**: Envía un mensaje por WhatsApp para obtener el archivo APK.
 2. **Permitir instalación de orígenes desconocidos**:
    - En tu dispositivo Android, ve a `Ajustes > Seguridad`.
    - Activa la opción **"Instalar aplicaciones desconocidas"** para el navegador o gestor de archivos que estés usando.
