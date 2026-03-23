@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "512480832773",
+    "project_id": "futstats-firebase-4c9b5",
+    "storage_bucket": "futstats-firebase-4c9b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512480832773:android:6de80cd3364f70fe7a9b6c",
+        "android_client_info": {
+          "package_name": "com.example.futstats"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWD7iGND-vtO-_ln7dElLgexIwTKAdJl0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
