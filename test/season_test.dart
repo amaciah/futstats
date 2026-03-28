@@ -14,7 +14,7 @@ void main() {
 }
 
 // Crear y serializar una temporada
-testSeasonSerialization() {
+void testSeasonSerialization() {
   var match = Match(
     matchweek: 5,
     date: DateTime(2023, 10, 3),
@@ -43,7 +43,7 @@ testSeasonSerialization() {
 }
 
 // Deserializar una temporada
-testSeasonDeserialization() {
+void testSeasonDeserialization() {
   var seasonMap = {
     'id': 'season1',
     'year': '2023',
@@ -71,7 +71,7 @@ testSeasonDeserialization() {
 }
 
 // Generar ID si no se proporciona
-testSeasonIdGeneration() {
+void testSeasonIdGeneration() {
   var season = Season(
     year: '2023',
     matches: [],

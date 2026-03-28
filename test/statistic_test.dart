@@ -13,7 +13,7 @@ void main() {
 }
 
 // Crear y serializar una estadística
-testStatisticSerialization() {
+void testStatisticSerialization() {
   var stat = ManualStat(
     id: 'stat2',
     initialValue: 25.0,

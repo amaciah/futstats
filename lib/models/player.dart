@@ -1,5 +1,5 @@
-import 'package:futstats/main.dart';
-import 'package:futstats/models/season.dart';
+// player.dart
+
 import 'package:uuid/uuid.dart';
 
 var uuid = const Uuid();
@@ -38,23 +38,7 @@ class Player {
   final DateTime birth;
   final PlayerPosition position;
 
-  String? _currentSeason;
-
-  // Obtener las temporadas del jugador
-  Future<List<Season>> get seasons async =>
-      await MyApp.seasonRepo.getAllSeasons();
-
-  // Obtener la temporada actual del jugador
-  Future<Season?> get currentSeason async => _currentSeason == null
-      ? null
-      : await MyApp.seasonRepo.getSeason(_currentSeason!);
-
-  Future<void> setCurrentSeason(String seasonId) async {
-    _currentSeason = seasonId;
-    await _savePlayer();
-  }
-
-  Future<void> _savePlayer() async => await MyApp.playerRepo.setPlayer(this);
+  String? currentSeasonId;
 
   // Serialización para Firestore
   Map<String, dynamic> toMap() {
@@ -63,7 +47,7 @@ class Player {
       'name': name,
       'birth': birth.toIso8601String(),
       'position': position.name,
-      'currentSeason': _currentSeason,
+      'currentSeason': currentSeasonId,
     };
   }
 
@@ -73,6 +57,6 @@ class Player {
       name: map['name'],
       birth: DateTime.parse(map['birth']),
       position: PlayerPosition.values.byName(map['position']),
-    ).._currentSeason = map['currentSeason'];
+    )..currentSeasonId = map['currentSeason'];
   }
 }

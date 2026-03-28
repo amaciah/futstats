@@ -1,6 +1,10 @@
+// home_screen.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:futstats/main.dart';
+import 'package:provider/provider.dart';
+
+import 'package:futstats/screens/competitions_screen.dart';
 import 'package:futstats/screens/match_details_screen.dart';
 import 'package:futstats/screens/match_form_page.dart';
 import 'package:futstats/screens/matches_page.dart';
@@ -10,6 +14,7 @@ import 'package:futstats/screens/progress_page.dart';
 import 'package:futstats/screens/seasons_screen.dart';
 import 'package:futstats/screens/stats_page.dart';
 import 'package:futstats/screens/auth_gate.dart';
+import 'package:futstats/state/app_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,12 +45,15 @@ class HomeScreenState extends State<HomeScreen> {
         return const StatsPage();
       case 2:
         return MatchFormPage(
-          onMatchSaved: (match) async {
+          onMatchSaved: (match, competition) async {
             // Navegar a la página de detalles de partido
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => MatchDetailsScreen(match: match),
+                builder: (context) => MatchDetailsScreen(
+                  match: match, 
+                  competition: competition,
+                ),
               ),
             );
             // Navegar a la página de partidos
@@ -136,7 +144,6 @@ class HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.data_saver_off_outlined),
             label: "Objetivos",
-            enabled: false,
           ),
         ],
       ),
@@ -164,10 +171,12 @@ class HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PlayerFormScreen(
-                      player: MyApp.player,
-                      icon: const Icon(Icons.save),
-                      onPlayerSaved: _onReturnFromMenuAction,
+                    builder: (context) => Consumer<AppState>(
+                      builder: (context, appState, child) => PlayerFormScreen(
+                          player: appState.player,
+                          icon: const Icon(Icons.save),
+                          onPlayerSaved: _onReturnFromMenuAction,
+                      ),
                     ),
                   ),
                 );
@@ -185,6 +194,17 @@ class HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.emoji_events_outlined),
+              title: const Text('Competiciones'),
+              onTap: () {
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (_) => const CompetitionsScreen()),
+                );
+                _closeMenu();
               },
             ),
             ListTile(

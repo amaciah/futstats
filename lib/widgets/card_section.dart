@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:futstats/models/statistics.dart';
 import 'objective_card.dart';
 
 class CardSection extends StatelessWidget {
@@ -9,6 +10,8 @@ class CardSection extends StatelessWidget {
     required this.cardSize,
     required this.onChangeCardSize,
     required this.color,
+    this.onObjectiveTap,
+    this.onObjectiveLongPress,
   });
 
   final Color color;
@@ -16,6 +19,8 @@ class CardSection extends StatelessWidget {
   final List<Map<String, dynamic>> objectives;
   final int cardSize;
   final VoidCallback onChangeCardSize;
+  final void Function(Map<String, dynamic>)? onObjectiveTap;
+  final void Function(Map<String, dynamic>)? onObjectiveLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +79,15 @@ class CardSection extends StatelessWidget {
           stat: objective['stat'],
           target: objective['target'],
           isPositive: objective['isPositive'],
+          statType: objective['statType'] as StatValueType? ?? StatValueType.integer,
           cardSize: cardSize,
           color: color,
+          onTap: onObjectiveTap != null 
+              ? () => onObjectiveTap!(objective) 
+              : null,
+          onLongPress: onObjectiveLongPress != null 
+              ? () => onObjectiveLongPress!(objective) 
+              : null,
         );
       },
     );

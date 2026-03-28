@@ -1,3 +1,4 @@
+// statistics.dart
 
 enum StatCategory {
   participation,
@@ -799,9 +800,9 @@ abstract class StatFormulas {
     },
   };
 
-  // HERE: Fórmulas de temporada
+  // HERE: Fórmulas acumuladas
   static final Map<String, double Function(Map<String, double>)>
-      seasonFormulas = {
+      aggregateFormulas = {
     // Participación
     'goal_difference': (Map<String, double> stats) =>
         (stats['goals_for'] ?? 0) - (stats['goals_against'] ?? 0),
@@ -810,7 +811,7 @@ abstract class StatFormulas {
   static final Map<String, double Function(Map<String, double>)> allFormulas =
       {}
         ..addAll(matchFormulas)
-        ..addAll(seasonFormulas);
+        ..addAll(aggregateFormulas);
 
   static double Function(Map<String, double>) getFormulaById(String statId) =>
       allFormulas[statId]!;
@@ -821,12 +822,12 @@ abstract class StatFormulas {
     });
   }
 
-  static void calculateSeasonStats(Map<String, double> stats) {
+  static void calculateAggregateStats(Map<String, double> stats) {
     // Actualizar stats para poder calcular fórmulas que dependen de otros cálculos
     matchFormulas.forEach((statId, formula) {
       stats[statId] = formula(stats);
     });
-    seasonFormulas.forEach((statId, formula) {
+    aggregateFormulas.forEach((statId, formula) {
       stats[statId] = formula(stats);
     });
   }

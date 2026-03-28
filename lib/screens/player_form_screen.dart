@@ -1,7 +1,11 @@
+// player_form_screen.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:futstats/main.dart';
+import 'package:provider/provider.dart';
+
 import 'package:futstats/models/player.dart';
+import 'package:futstats/state/app_state.dart';
 import 'package:futstats/widgets/date_picker_field.dart';
 
 class PlayerFormScreen extends StatefulWidget {
@@ -27,7 +31,8 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
   late DateTime _birth = widget.player?.birth ?? DateTime.now();
   late PlayerPosition? _position = widget.player?.position;
 
-  void _savePlayer() async {
+  void _savePlayer(BuildContext context) async {
+    final appState = Provider.of<AppState>(context, listen: false);
     if (_formKey.currentState!.validate()) {
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final player = Player(
@@ -36,12 +41,7 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
         birth: _birth,
         position: _position!,
       );
-      final currentSeason = await widget.player?.currentSeason;
-      if (currentSeason != null) {
-        await player.setCurrentSeason(currentSeason.id);
-      }
-      MyApp.player = player;
-      MyApp.playerRepo.setPlayer(player);
+      await appState.savePlayer(player);
       widget.onPlayerSaved();
     }
   }
@@ -50,7 +50,7 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Información del jugador'),
+        title: const Text('Información del jugador'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -62,7 +62,7 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
               // Nombre
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Nombre'),
+                decoration: const InputDecoration(labelText: 'Nombre'),
                 validator: (value) => (value == null || value.isEmpty)
                     ? 'Introduzca un nombre'
                     : null,
@@ -83,7 +83,7 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
 
               // Posición
               DropdownButtonFormField(
-                value: _position,
+                initialValue: _position,
                 decoration: const InputDecoration(labelText: 'Posición'),
                 items: PlayerPosition.values
                     .map((position) => DropdownMenuItem(
@@ -105,7 +105,7 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: widget.icon,
-        onPressed: () => _savePlayer(),
+        onPressed: () => _savePlayer(context),
       ),
     );
   }

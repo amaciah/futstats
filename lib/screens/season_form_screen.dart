@@ -1,6 +1,10 @@
+// season_form_screen.dart
+
 import 'package:flutter/material.dart';
-import 'package:futstats/main.dart';
+import 'package:provider/provider.dart';
+
 import 'package:futstats/models/season.dart';
+import 'package:futstats/state/app_state.dart';
 
 class SeasonFormScreen extends StatefulWidget {
   const SeasonFormScreen({super.key, this.season});
@@ -16,24 +20,25 @@ class _SeasonFormScreenState extends State<SeasonFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late int _startDate = widget.season?.startDate ?? DateTime.now().year;
   late int _endDate = widget.season?.endDate ?? _startDate + 1;
-  late int? _matchweeks = widget.season?.numMatchweeks;
 
   Future<void> _saveSeason() async {
+    final appState = Provider.of<AppState>(context, listen: false);
     final season = Season(
       id: widget.season?.id,
       startDate: _startDate,
       endDate: _endDate,
-      numMatchweeks: _matchweeks!,
     );
-    await MyApp.setSeason(season);
-    await MyApp.seasonRepo.setSeason(season);
+    await appState.saveSeason(season);
+    if (mounted) {
+      Navigator.pop(context, true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Información de la temporada'),
+        title: Text(widget.season == null ? 'Nueva temporada' : 'Editar temporada'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -44,7 +49,7 @@ class _SeasonFormScreenState extends State<SeasonFormScreen> {
             children: [
               // Año de inicio
               DropdownButtonFormField<int>(
-                value: _startDate,
+                initialValue: _startDate,
                 decoration: const InputDecoration(labelText: 'Año de inicio'),
                 items:
                     List<int>.generate(50, (i) => DateTime.now().year + 1 - i)
@@ -64,7 +69,7 @@ class _SeasonFormScreenState extends State<SeasonFormScreen> {
 
               // Año de fin
               DropdownButtonFormField<int>(
-                value: _endDate,
+                initialValue: _endDate,
                 decoration: const InputDecoration(labelText: 'Año de fin'),
                 items:
                     List<int>.generate(50, (i) => DateTime.now().year + 1 - i)
@@ -79,18 +84,7 @@ class _SeasonFormScreenState extends State<SeasonFormScreen> {
                   });
                 },
                 validator: (value) => (value == null || value < _startDate)
-                    ? 'Seleccione un año válido'
-                    : null,
-              ),
-
-              // Número de jornadas
-              TextFormField(
-                initialValue: _matchweeks?.toString(),
-                decoration: const InputDecoration(labelText: 'Nº de jornadas'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) => _matchweeks = int.tryParse(value ?? '0'),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Introduzca el número de jornadas'
+                    ? 'El año de fin debe ser igual o posterior al de inicio'
                     : null,
               ),
             ],
@@ -103,9 +97,6 @@ class _SeasonFormScreenState extends State<SeasonFormScreen> {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
             await _saveSeason();
-            if (context.mounted) {
-              Navigator.pop(context, true);
-            }
           }
         },
       ),

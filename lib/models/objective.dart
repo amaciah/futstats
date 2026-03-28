@@ -1,4 +1,5 @@
-import 'package:futstats/main.dart';
+// objective.dart
+
 import 'package:uuid/uuid.dart';
 
 enum ObjectiveType { positive, negative }
@@ -17,16 +18,6 @@ class Objective {
   final String statId; // ID de la estadística asociada
   final double target;
   final bool isPositive;
-
-  Future<double> get stat async {
-    var stats = await MyApp.statsRepo.getSeasonStatistics();
-    return stats[statId] ?? 0;
-  }
-  
-  Future<bool> get isTargetMet async {
-    var value = await stat;
-    return isPositive ? value >= target : value <= target;
-  }
 
   // Serialización para Firestore
   Map<String, dynamic> toMap() {

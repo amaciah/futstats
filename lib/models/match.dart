@@ -1,6 +1,9 @@
+// match.dart
+
 import 'package:flutter/material.dart';
-import 'package:futstats/models/statistics.dart';
 import 'package:uuid/uuid.dart';
+
+import 'package:futstats/models/statistics.dart';
 
 var uuid = const Uuid();
 
@@ -34,10 +37,11 @@ enum MatchResult {
   }
 }
 
-class Match {
+class Match implements Comparable<Match> {
   Match({
     String? id,
-    required this.matchweek,
+    this.matchweek,
+    this.round,
     required this.date,
     required this.opponent,
     required this.goalsFor,
@@ -48,7 +52,8 @@ class Match {
   }
 
   final String id;
-  final int matchweek;
+  final int? matchweek;
+  final int? round;
   final DateTime date;
   final String opponent;
   final int goalsFor;
@@ -71,6 +76,7 @@ class Match {
     return {
       'id': id,
       'matchweek': matchweek,
+      'round': round,
       'date': date.toIso8601String(),
       'opponent': opponent,
       'goalsFor': goalsFor,
@@ -83,11 +89,23 @@ class Match {
     return Match(
       id: map['id'],
       matchweek: map['matchweek'],
+      round: map['round'],
       date: DateTime.parse(map['date']),
       opponent: map['opponent'],
       goalsFor: map['goalsFor'],
       goalsAgainst: map['goalsAgainst'],
       stats: Map<String, double>.from(map['stats']),
     );
+  }
+
+  @override
+  int compareTo(Match other) {
+    if (matchweek != null && other.matchweek != null) {
+      return matchweek!.compareTo(other.matchweek!);
+    } else if (round != null && other.round != null) {
+      return round!.compareTo(other.round!);
+    } else {
+      return date.compareTo(other.date);
+    }
   }
 }

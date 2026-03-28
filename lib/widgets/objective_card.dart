@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:futstats/models/statistics.dart';
 
 class ObjectiveCard extends StatelessWidget {
   ObjectiveCard({
@@ -9,23 +10,30 @@ class ObjectiveCard extends StatelessWidget {
     required this.stat,
     required this.target,
     required this.isPositive,
+    required this.statType,
     required this.cardSize,
     required this.color,
+    this.onTap,
+    this.onLongPress,
   });
 
   final Color color;
   final String title;
-  final int stat;
-  final int target;
+  final double stat;
+  final double target;
   final bool isPositive;
+  final StatValueType statType;
   final int cardSize; // 0: pequeña, 1: mediana, 2: grande
   late final double progress = stat / target > 1 ? 1.0 : stat / target;
 
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+
   static Color? backgroundColor = Colors.grey[850];
 
-  bool get isTargetMet {
-    return isPositive ? stat >= target : stat <= target;
-  }
+  bool get isTargetMet => isPositive 
+      ? stat >= target 
+      : stat <= target;
 
   Widget get _buildCardOfSize {
     switch (cardSize) {
@@ -42,17 +50,21 @@ class ObjectiveCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: isTargetMet
-          ? RoundedRectangleBorder(
-              side: BorderSide(
-                width: cardSize + 3.0,
-                color: Colors.amberAccent,
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(12.0)),
-            )
-          : null,
-      child: _buildCardOfSize,
+    return GestureDetector(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      child: Card(
+        shape: isTargetMet
+            ? RoundedRectangleBorder(
+                side: BorderSide(
+                  width: cardSize + 3.0,
+                  color: Colors.amberAccent,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+              )
+            : null,
+        child: _buildCardOfSize,
+      ),
     );
   }
 
@@ -72,7 +84,7 @@ class ObjectiveCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            "$stat",
+            statType.repr(stat),
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w800,
@@ -123,12 +135,12 @@ class ObjectiveCard extends StatelessWidget {
                         strokeWidth: strokeWidth,
                         color: color,
                         backgroundColor: backgroundColor,
-                        endText: "${isPositive ? "" : "+"}$target",
+                        endText: "${isPositive ? "" : "+"}${statType.repr(target)}",
                       ),
                     ),
                   ),
                   Text(
-                    "$stat",
+                    statType.repr(stat),
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w800,
@@ -175,13 +187,13 @@ class ObjectiveCard extends StatelessWidget {
                         strokeWidth: strokeWidth,
                         color: color,
                         backgroundColor: backgroundColor,
-                        endText: "${isPositive ? "" : "+"}$target",
+                        endText: "${isPositive ? "" : "+"}${statType.repr(target)}",
                       ),
                     ),
                   ),
                   Positioned(
                     child: Text(
-                      "$stat",
+                      statType.repr(stat),
                       style: TextStyle(
                         fontSize: 33,
                         fontWeight: FontWeight.w800,

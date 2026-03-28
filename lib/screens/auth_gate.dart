@@ -1,10 +1,14 @@
+// auth_gate.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart' as auth_ui;
 import 'package:flutter/material.dart';
-import 'package:futstats/main.dart';
+import 'package:provider/provider.dart';
+
 import 'package:futstats/screens/home_screen.dart';
 import 'package:futstats/screens/player_form_screen.dart';
 import 'package:futstats/screens/seasons_screen.dart';
+import 'package:futstats/state/app_state.dart';
 import 'package:futstats/widgets/waiting_indicator.dart';
 
 class AuthGate extends StatefulWidget {
@@ -17,21 +21,25 @@ class AuthGate extends StatefulWidget {
 class AuthGateState extends State<AuthGate> {
   void rebuild() => setState(() {});
 
-  Future<Widget> _checkPlayerAndSeason(String userId) async {
+  Future<Widget> _checkPlayerAndSeason(BuildContext context, String userId) async {
+    final appState = Provider.of<AppState>(context, listen: false);
+
     // Comprobar si hay jugador asociado al usuario
-    final player = await MyApp.playerRepo.getPlayer(userId);
+    final player = await appState.getPlayerById(userId);
     if (player == null) {
       return PlayerFormScreen(
-        icon: Icon(Icons.arrow_forward),
+        icon: const Icon(Icons.arrow_forward),
         onPlayerSaved: rebuild,
       );
     }
-    MyApp.player = player;
+    await appState.setActivePlayer(player);
 
     // Comprobar si el jugador tiene temporada actual
-    final season = await player.currentSeason;
-    if (season == null) return SeasonsScreen(onSeasonSelected: rebuild);
-    await MyApp.setSeason(season);
+    final season = await appState.getCurrentSeasonFromDB();
+    if (season == null) {
+      return SeasonsScreen(onSeasonSelected: rebuild);
+    }
+    await appState.setCurrentSeason(season);
 
     // Ir a la página principal
     return const HomeScreen();
@@ -56,7 +64,7 @@ class AuthGateState extends State<AuthGate> {
               return const Padding(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  '© 2024 Futstats',
+                  '© 2026 Futstats',
                   style: TextStyle(fontSize: 12),
                 ),
               );
@@ -67,7 +75,7 @@ class AuthGateState extends State<AuthGate> {
         // Hay usuario
         else {
           return FutureBuilder<Widget>(
-            future: _checkPlayerAndSeason(userSnapshot.data!.uid),
+            future: _checkPlayerAndSeason(context, userSnapshot.data!.uid),
             builder: (context, widgetSnapshot) {
               if (widgetSnapshot.connectionState == ConnectionState.waiting) {
                 return const WaitingIndicator();

@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "512480832773",
     "project_id": "futstats-firebase-4c9b5",
-    "storage_bucket": "futstats-firebase-4c9b5.appspot.com"
+    "storage_bucket": "futstats-firebase-4c9b5.firebasestorage.app"
   },
   "client": [
     {
