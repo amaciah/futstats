@@ -7,12 +7,14 @@ class ObjectiveController {
   ObjectiveController({
     required String playerId,
     required String seasonId,
-  }) : objectiveRepo = ObjectiveRepository(
+    ObjectiveRepository? repo,
+  }) : _objectiveRepo = repo ?? ObjectiveRepository(
           playerId: playerId,
           seasonId: seasonId,
         );
 
-  final ObjectiveRepository objectiveRepo;
+  ObjectiveRepository get objectiveRepo => _objectiveRepo;
+  final ObjectiveRepository _objectiveRepo;
 
   Future<Objective?> loadObjective(String objectiveId) =>
       objectiveRepo.get(objectiveId);

@@ -4,9 +4,11 @@ import 'package:futstats/models/player.dart';
 import 'package:futstats/services/repositories/player_repository.dart';
 
 class PlayerController {
-  PlayerController();
+  PlayerController({PlayerRepository? repo})
+      : _playerRepo = repo ?? PlayerRepository();
 
-  final PlayerRepository playerRepo = PlayerRepository();
+  PlayerRepository get playerRepo => _playerRepo;
+  final PlayerRepository _playerRepo;
 
   Future<Player?> loadPlayer(String userId) =>
       playerRepo.get(userId);

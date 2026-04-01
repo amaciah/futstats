@@ -1,0 +1,32 @@
+Una serie de requisitos que no deben romperse, independientemente de cambios futuros
+
+ESTADÍSTICAS
+  R01 - calculateMatchStats no modifica estadísticas manuales existentes
+  R02 - Los porcentajes siempre están en el rango [0, 100]
+  R03 - Division por cero siempre produce 0 (nunca NaN ni excepción)
+  R04 - open_play_goals nunca puede ser negativo
+  R05 - goal_contributions = goals + assists exactamente
+  R06 - defensive_actions = blocks + clearances + interceptions exactamente
+  R07 - calculateAggregateStats produce los mismos resultados
+         que calcular manualmente sobre la suma de partidos
+
+MODELOS
+  R08 - toMap/fromMap es idempotente: fromMap(toMap(x)) == x en todos los campos
+  R09 - Un Match sin id genera un UUID v4 único en cada instancia
+  R10 - MatchResult.win.points == 3, draw == 1, loss == 0
+  R11 - Match.result es consistente con goalsFor y goalsAgainst
+  R12 - Season.date es correcto para temporadas de un año y de dos años
+  R13 - Competition.requiresMatchweek es true solo para ligas
+  R14 - Competition.requiresRound es true para copas y torneos
+
+CONTROLADORES
+  R15 - saveMatch recalcula stats de competición Y temporada
+  R16 - deleteMatch recalcula stats de competición Y temporada
+  R17 - _aggregateMatchStats sobre lista vacía devuelve games_played == 0
+  R18 - Los amistosos no se incluyen en las stats de temporada
+  R19 - Los partidos se ordenan por jornada, ronda o fecha según tipo
+
+APP STATE
+  R20 - setActivePlayer reinicia toda la jerarquía de estado dependiente
+  R21 - setCurrentSeason inicializa controladores y carga competitions/objectives
+  R22 - saveMatch sobre una competición no seleccionada no corrompe el estado

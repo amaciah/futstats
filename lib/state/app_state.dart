@@ -33,23 +33,43 @@ class AppState extends ChangeNotifier {
   List<Objective> objectives = [];
 
   // Controladores de primer nivel
-  final _playerController = PlayerController();
+  late final _playerController = createPlayerController();
 
   // Controladores dependientes del estado
   SeasonController? _seasonController;
   CompetitionController? _competitionController;
   ObjectiveController? _objectiveController;
-  MatchController _createMatchController(Competition competition) {
+
+  // Factories para controladores
+  @visibleForTesting
+  PlayerController createPlayerController() => PlayerController();
+
+  @visibleForTesting
+  SeasonController createSeasonController(String playerId) =>
+      SeasonController(playerId: playerId);
+  
+  @visibleForTesting
+  CompetitionController createCompetitionController(
+          String playerId, String seasonId) => 
+      CompetitionController(playerId: playerId, seasonId: seasonId);
+
+  @visibleForTesting
+  ObjectiveController createObjectiveController(
+          String playerId, String seasonId) => 
+      ObjectiveController(playerId: playerId, seasonId: seasonId);
+
+  @visibleForTesting
+  MatchController createMatchController(Competition competition) {
     return MatchController(
       matchRepoFactory: (competitionId) => MatchRepository(
         playerId: player!.id,
-        seasonId: currentSeason!.id, 
+        seasonId: currentSeason!.id,
         competitionId: competitionId,
-      ), 
-      seasonController: _seasonController!, 
-      competitionController: _competitionController!, 
+      ),
+      seasonController: _seasonController!,
+      competitionController: _competitionController!,
       season: currentSeason!,
-      competition: competition, 
+      competition: competition,
     );
   }
 
@@ -66,7 +86,7 @@ class AppState extends ChangeNotifier {
     _player = player;
 
     // Inicializar controladores dependientes
-    _seasonController = SeasonController(playerId: player.id);
+    _seasonController = createSeasonController(player.id);
 
     // Reiniciar estado dependiente
     _season = null;
@@ -99,13 +119,13 @@ class AppState extends ChangeNotifier {
     _player = _player!..currentSeasonId = season.id;
 
     // Inicializar controladores dependientes
-    _competitionController = CompetitionController(
-      playerId: player!.id,
-      seasonId: season.id,
+    _competitionController = createCompetitionController(
+      player!.id,
+      season.id,
     );
-    _objectiveController = ObjectiveController(
-      playerId: player!.id,
-      seasonId: season.id,
+    _objectiveController = createObjectiveController(
+      player!.id,
+      season.id,
     );
 
     // Cargar competiciones y objetivos
@@ -181,7 +201,7 @@ class AppState extends ChangeNotifier {
     if (_competitionController == null) return;
 
     // Borrar los partidos de la competición
-    final matchController = _createMatchController(competition);
+    final matchController = createMatchController(competition);
     await matchController.loadMatches();
     final matches = matchController.matches;
     for (final match in matches) {
@@ -233,14 +253,14 @@ class AppState extends ChangeNotifier {
 
   Future<void> saveMatch(Match match, Competition competition) async {
     if (player == null || currentSeason == null) return;
-    final matchController = _createMatchController(competition);
+    final matchController = createMatchController(competition);
     await matchController.saveMatch(match);
     await loadCompetitions();
   }
 
   Future<void> deleteMatch(String matchId, Competition competition) async {
     if (player == null || currentSeason == null) return;
-    final matchController = _createMatchController(competition);
+    final matchController = createMatchController(competition);
     await matchController.deleteMatch(matchId);
     await loadCompetitions();
   }

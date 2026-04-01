@@ -7,12 +7,14 @@ class CompetitionController {
   CompetitionController({
     required String playerId,
     required String seasonId,
-  }) : competitionRepo = CompetitionRepository(
+    CompetitionRepository? repo,
+  }) : _competitionRepo = repo ?? CompetitionRepository(
           playerId: playerId,
           seasonId: seasonId,
         );
 
-  final CompetitionRepository competitionRepo;
+  CompetitionRepository get competitionRepo => _competitionRepo;
+  final CompetitionRepository _competitionRepo;
 
   Future<Competition?> loadCompetition(String competitionId) =>
       competitionRepo.get(competitionId);

@@ -6,9 +6,11 @@ import 'package:futstats/services/repositories/season_repository.dart';
 class SeasonController {
   SeasonController({
     required String playerId,
-  }) : seasonRepo = SeasonRepository(playerId: playerId);
+    SeasonRepository? repo,
+  }) : _seasonRepo = repo ?? SeasonRepository(playerId: playerId);
 
-  final SeasonRepository seasonRepo;
+  SeasonRepository get seasonRepo => _seasonRepo;
+  final SeasonRepository _seasonRepo;
 
   Future<Season?> loadSeason(String seasonId) =>
       seasonRepo.get(seasonId);
