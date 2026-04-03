@@ -24,6 +24,11 @@ Establece metas específicas por temporada (goles, asistencias, minutos, accione
 ### **📈 Resumen visual** *(en desarrollo)*
 En próximas versiones, podrás consultar gráficos, tendencias y resúmenes para evaluar tu rendimiento.
 
+## Próxima actualización
+La siguiente versión de Futstats, prevista para el 26 de abril, incorporará un **sistema adaptativo** que personalizará tus estadísticas y objetivos según tu posición, rendimiento histórico y hábitos de uso.
+
+Esto te permitirá ver primero lo que más te importa y recibir recomendaciones útiles para mejorar más rápido.
+
 ## **¿Cómo funciona?**
 1. **Inicia sesión**: Usa tu cuenta de correo electrónico para acceder de forma segura a la app.
 2. **Crea tu perfil**: Introduce tu información básica, como nombre, posición y fecha de nacimiento. Esto ayuda a personalizar la experiencia.
