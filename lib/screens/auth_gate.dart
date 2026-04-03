@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart' as auth_ui;
 import 'package:flutter/material.dart';
+import 'package:futstats/services/migration_service.dart';
 import 'package:provider/provider.dart';
 
 import 'package:futstats/screens/home_screen.dart';
@@ -33,6 +34,9 @@ class AuthGateState extends State<AuthGate> {
       );
     }
     await appState.setActivePlayer(player);
+
+    // Ejecutar migraciones antes de cargar la temporada actual
+    await MigrationService().migrateIfNeeded(player.id);
 
     // Comprobar si el jugador tiene temporada actual
     final season = await appState.getCurrentSeasonFromDB();

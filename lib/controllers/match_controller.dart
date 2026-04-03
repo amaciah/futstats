@@ -73,51 +73,13 @@ class MatchController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, double> _aggregateMatchStats(List<Match> matchList) {
-    Map<String, double> stats = {};
-    add(String id, double increment) {
-      stats.update(id, (value) => value + increment,
-          ifAbsent: () => increment);
-    }
-
-    for (var match in matchList) {
-      // Actualizar estadísticas de participación
-      add('goals_for', match.goalsFor.toDouble());
-      add('goals_against', match.goalsAgainst.toDouble());
-      add('clean_sheets', match.goalsAgainst == 0 ? 1 : 0);
-      add('points', match.result.points.toDouble());
-      switch (match.result) {
-        case MatchResult.win:
-          add('wins', 1);
-          break;
-        case MatchResult.draw:
-          add('draws', 1);
-          break;
-        case MatchResult.loss:
-          add('defeats', 1);
-          break;
-      }
-
-      // Actualizar estadísticas manuales
-      for (final statId in StatTemplates.manualStatIds) {
-        add(statId, match.stats[statId] ?? 0);
-      }
-    }
-
-    // Contar partidos jugados
-    stats['games_played'] = matchList.length.toDouble();
-
-    return stats;
-  }
-
-
   Future<void> _recalculateCompetitionStats() async {
     // Obtener partidos de la competición
     final matchRepo = matchRepoFactory(competition.id);
     final competitionMatches = await matchRepo.getAll();
 
     // Calcular estadísticas agregadas
-    final competitionStats = _aggregateMatchStats(competitionMatches);
+    final competitionStats = StatFormulas.aggregateMatchStats(competitionMatches);
     StatFormulas.calculateAggregateStats(competitionStats);
 
     // Actualizar competición
@@ -142,7 +104,7 @@ class MatchController extends ChangeNotifier {
     }
 
     // Calcular estadísticas agregadas
-    final seasonStats = _aggregateMatchStats(allMatches);
+    final seasonStats = StatFormulas.aggregateMatchStats(allMatches);
     StatFormulas.calculateAggregateStats(seasonStats);
 
     // Actualizar temporada
