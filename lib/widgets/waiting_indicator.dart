@@ -1,3 +1,5 @@
+// widgets/waiting_indicator.dart
+
 import 'package:flutter/material.dart';
 
 class WaitingIndicator extends StatelessWidget {

@@ -1,4 +1,4 @@
-// competition.dart
+// models/competition.dart
 
 import 'package:uuid/uuid.dart';
 
@@ -27,7 +27,20 @@ enum CompetitionType {
   bool get isCup => this == CompetitionType.cup;
   bool get isTournament => this == CompetitionType.tournament;
   bool get isFriendly => this == CompetitionType.friendly;
+}
 
+abstract class RoundNames {
+  /// Devuelve el nombre de una ronda dado su número y el total de rondas.
+  static String getRoundName(int round, int totalRounds) {
+    final fromEnd = totalRounds - round;
+    switch (fromEnd) {
+      case 0:   return 'Final';
+      case 1:   return 'Semifinal';
+      case 2:   return 'Cuartos de final';
+      case 3:   return 'Octavos de final';
+      default:  return 'Ronda $round';
+    }
+  }
 }
 
 class Competition {
@@ -54,8 +67,16 @@ class Competition {
 
   final Map<String, double> stats;
 
-  bool get requiresMatchweek => type.isLeague;
-  bool get requiresRound => type.isCup || type.isTournament;
+  bool get requiresMatchweek {
+    if (type.isLeague) return true;
+    if (type.isTournament && hasGroups) return true;
+    return false;
+  }
+  bool get requiresRound {
+    if (type.isCup) return true;
+    if (type.isTournament && hasKnockouts) return true;
+    return false;
+  }
 
   Map<String, dynamic> toMap() {
     return {

@@ -1,4 +1,4 @@
-// player_form_screen.dart
+// screens/player_form_screen.dart
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +28,31 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
   // Variables para el formulario
   final _formKey = GlobalKey<FormState>();
   late final _nameController = TextEditingController(text: widget.player?.name);
+  late final _nameFocusNode = FocusNode();
   late DateTime _birth = widget.player?.birth ?? DateTime.now();
   late PlayerPosition? _position = widget.player?.position;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameFocusNode.addListener(() {
+      if (_nameFocusNode.hasFocus) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _nameController.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: _nameController.text.length,
+          );
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _nameFocusNode.dispose();
+    super.dispose();
+  }
 
   void _savePlayer(BuildContext context) async {
     final appState = Provider.of<AppState>(context, listen: false);
@@ -62,6 +85,7 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
               // Nombre
               TextFormField(
                 controller: _nameController,
+                focusNode: _nameFocusNode,
                 decoration: const InputDecoration(labelText: 'Nombre'),
                 validator: (value) => (value == null || value.isEmpty)
                     ? 'Introduzca un nombre'

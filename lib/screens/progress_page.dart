@@ -1,4 +1,4 @@
-// progress_page.dart
+// screens/progress_page.dart
 
 import 'package:flutter/material.dart';
 

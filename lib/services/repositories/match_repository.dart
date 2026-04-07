@@ -1,4 +1,4 @@
-// match_repository.dart
+// services/repositories/match_repository.dart
 
 import 'package:futstats/models/match.dart';
 import 'package:futstats/services/firestore_paths.dart';

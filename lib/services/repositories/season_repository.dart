@@ -1,4 +1,4 @@
-// season_repository.dart
+// services/repositories/season_repository.dart
 
 import 'package:futstats/models/season.dart';
 import 'package:futstats/services/firestore_paths.dart';

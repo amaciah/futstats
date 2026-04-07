@@ -1,3 +1,5 @@
+// test/helpers/in_memory_migration_adapter.dart
+
 import 'package:futstats/services/migration_service.dart';
 
 /// Implementación en memoria de MigrationFirestoreAdapter.

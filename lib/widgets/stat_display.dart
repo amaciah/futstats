@@ -1,3 +1,5 @@
+// widgets/stat_display.dart
+
 import 'package:flutter/material.dart';
 import 'package:futstats/models/statistics.dart';
 
@@ -16,7 +18,7 @@ class StatDisplay extends StatelessWidget {
         .map((category) {
           final statsForCategory = stats.entries
               .where((entry) =>
-                  StatTemplates.getTemplateById(entry.key).category == category)
+                  StatTemplates.allSeasonTemplates[entry.key]?.category == category)
               .toList();
           return MapEntry(category, statsForCategory);
         })
@@ -39,7 +41,8 @@ class StatDisplay extends StatelessWidget {
               ),
             ),
             ...entry.value.map((stat) {
-              final statTemplate = StatTemplates.getTemplateById(stat.key);
+              final statTemplate = StatTemplates.allSeasonTemplates[stat.key];
+              if (statTemplate == null) return const SizedBox.shrink();
               return ListTile(
                 title: Text(statTemplate.title),
                 subtitle: Text(statTemplate.description),

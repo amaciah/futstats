@@ -1,4 +1,4 @@
-// match_form_page.dart
+// screens/match_form_page.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +9,7 @@ import 'package:futstats/models/statistics.dart';
 import 'package:futstats/state/app_state.dart';
 import 'package:futstats/widgets/date_picker_field.dart';
 import 'package:futstats/widgets/loading_overlay.dart';
+import 'package:futstats/widgets/select_all_text_form_field.dart';
 
 class MatchFormPage extends StatefulWidget {
   const MatchFormPage({
@@ -113,11 +114,36 @@ class _MatchFormPageState extends State<MatchFormPage> {
                     }),
             validator: (value) => 
                 value == null ? 'Seleccione una competición' : null,
-
           ),
 
-          // Jornada
-          if (_competition?.requiresMatchweek == true)
+          // Ronda
+          if (_competition?.requiresRound == true)
+            DropdownButtonFormField<int>(
+              initialValue: _round,
+              decoration: const InputDecoration(labelText: 'Ronda'),
+              items: [
+                if (_competition!.hasGroups)
+                  const DropdownMenuItem(
+                    value: 0,
+                    child: Text('Fase de liga'),
+                  ),
+                ...List.generate(
+                  _competition!.numRounds ?? 5,
+                  (i) => DropdownMenuItem(
+                    value: i + 1,
+                    child: Text(RoundNames.getRoundName(i + 1, _competition!.numRounds ?? 5)),
+                  ),
+                ),
+              ],
+              onChanged: (value) => setState(() => _round = value),
+              validator: (value) =>
+                  value == null ? 'Seleccione una ronda' : null,
+            ),
+
+          // Jornada (ligas y fase de liga en torneos)
+          if (_competition?.type.isLeague == true || 
+              (_competition?.type.isTournament == true &&
+               _competition?.hasGroups == true && _round == 0))
             DropdownButtonFormField<int>(
               initialValue: _matchweek,
               decoration: const InputDecoration(labelText: 'Jornada'),
@@ -133,25 +159,8 @@ class _MatchFormPageState extends State<MatchFormPage> {
                   value == null ? 'Seleccione una jornada' : null,
             ),
 
-          // Ronda
-          if (_competition?.requiresRound == true)
-            DropdownButtonFormField<int>(
-              initialValue: _round,
-              decoration: const InputDecoration(labelText: 'Ronda'),
-              items: List.generate(
-                _competition!.numRounds ?? 8, 
-                (i) => DropdownMenuItem(
-                  value: i + 1,
-                  child: Text('Ronda ${i + 1}'),
-                ),
-              ),
-              onChanged: (value) => setState(() => _round = value),
-              validator: (value) =>
-                  value == null ? 'Seleccione una ronda' : null,
-            ),
-
           // Oponente
-          TextFormField(
+          SelectAllTextFormField(
             initialValue: _opponent,
             decoration: const InputDecoration(labelText: 'Oponente'),
             onSaved: (value) => _opponent = value,
@@ -178,7 +187,7 @@ class _MatchFormPageState extends State<MatchFormPage> {
             children: [
               // Goles a favor
               Expanded(
-                child: TextFormField(
+                child: SelectAllTextFormField(
                   initialValue: _goalsFor?.toString() ?? '0',
                   decoration: const InputDecoration(labelText: 'Goles a favor'),
                   keyboardType: TextInputType.number,
@@ -193,7 +202,7 @@ class _MatchFormPageState extends State<MatchFormPage> {
 
               // Goles en contra
               Expanded(
-                child: TextFormField(
+                child: SelectAllTextFormField(
                   initialValue: _goalsAgainst?.toString() ?? '0',
                   decoration:
                       const InputDecoration(labelText: 'Goles en contra'),
@@ -235,7 +244,10 @@ class _MatchFormPageState extends State<MatchFormPage> {
             isThreeLine: true,
             trailing: SizedBox(
               width: 36,
-              child: TextFormField(
+              child: SelectAllTextFormField(
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                ),
                 initialValue: template.type.repr(_stats[template.id] ?? 0),
                 keyboardType: TextInputType.number,
                 onChanged: (value) =>

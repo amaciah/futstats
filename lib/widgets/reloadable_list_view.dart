@@ -1,13 +1,15 @@
+// widgets/reloadable_list_view.dart
+
 import 'package:flutter/material.dart';
 import 'package:futstats/widgets/empty_reload_message.dart';
 import 'package:futstats/widgets/waiting_indicator.dart';
 
 class ReloadableListController<T> {
-  late VoidCallback _reloadCallback;
+  VoidCallback? _reloadCallback;
 
   // Método público para recargar la lista
   void reload() {
-    _reloadCallback();
+    _reloadCallback?.call();
   }
 
   // Método interno para enlazar la función de recarga con el widget

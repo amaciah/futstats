@@ -1,4 +1,4 @@
-// objective_repository.dart
+// services/repositories/objective_repository.dart
 
 import 'package:futstats/models/objective.dart';
 import 'package:futstats/services/firestore_paths.dart';

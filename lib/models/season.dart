@@ -1,4 +1,4 @@
-// season.dart
+// models/season.dart
 
 import 'package:uuid/uuid.dart';
 

@@ -1,4 +1,4 @@
-// player.dart
+// models/player.dart
 
 import 'package:uuid/uuid.dart';
 

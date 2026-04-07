@@ -1,4 +1,4 @@
-// firestore_repository.dart
+// services/repositories/firestore_repository.dart
 
 import 'package:futstats/services/firestore_service.dart';
 

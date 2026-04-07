@@ -1,4 +1,4 @@
-// season_controller.dart
+// controllers/season_controller.dart
 
 import 'package:futstats/models/season.dart';
 import 'package:futstats/services/repositories/season_repository.dart';

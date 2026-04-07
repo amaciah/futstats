@@ -1,4 +1,4 @@
-// migration_service.dart
+// services/migration_service.dart
 
 import 'package:flutter/material.dart';
 import 'package:futstats/models/competition.dart';
@@ -67,9 +67,9 @@ class MigrationService {
 
   final MigrationFirestoreAdapter _adapter;
 
-  String _legacyMatchPath(String playerId, String seasonId) => 
+  static String _legacyMatchPath(String playerId, String seasonId) => 
       'players/$playerId/seasons/$seasonId/matches';
-  String _legacyStatsPath(String playerId, String seasonId) => 
+  static String _legacyStatsPath(String playerId, String seasonId) => 
       'players/$playerId/seasons/$seasonId/statistics';
 
 

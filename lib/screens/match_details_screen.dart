@@ -1,4 +1,4 @@
-// match_details_screen.dart
+// screens/match_details_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -36,8 +36,17 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
   }
 
   String get _appBarTitle {
+    // Jornada (liga o fase de liga de torneo)
     if (_match.matchweek != null) return 'Jornada ${_match.matchweek}';
-    if (_match.round != null) return 'Ronda ${_match.round}';
+    // Ronda (copa o fase de eliminación de torneo)
+    if (_match.round != null) {
+      final totalRounds = widget.competition.numRounds;
+      if (totalRounds != null) {
+        return RoundNames.getRoundName(_match.round!, totalRounds);
+      }
+      return 'Ronda ${_match.round}';
+    }
+    // Nombre de la competición (amistoso o torneo sin jornadas ni rondas)
     return widget.competition.name;
   }
 

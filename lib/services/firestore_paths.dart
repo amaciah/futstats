@@ -1,4 +1,4 @@
-// firestore_paths.dart
+// services/firestore_paths.dart
 
 class FirestorePaths {
   // Jugadores

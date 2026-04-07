@@ -1,4 +1,4 @@
-// competition_repository.dart
+// services/repositories/competition_repository.dart
 
 import 'package:futstats/models/competition.dart';
 import 'package:futstats/services/firestore_paths.dart';

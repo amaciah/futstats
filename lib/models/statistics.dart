@@ -1,4 +1,4 @@
-// statistics.dart
+// models/statistics.dart
 
 import 'package:futstats/models/match.dart';
 

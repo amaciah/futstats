@@ -1,4 +1,4 @@
-// player_controller.dart
+// controllers/player_controller.dart
 
 import 'package:futstats/models/player.dart';
 import 'package:futstats/services/repositories/player_repository.dart';

@@ -1,4 +1,4 @@
-// match_controller.dart
+// controllers/match_controller.dart
 
 import 'package:flutter/material.dart';
 
@@ -65,6 +65,22 @@ class MatchController extends ChangeNotifier {
     
     // Actualizar cache
     _matches.removeWhere((m) => m.id == matchId);
+
+    // Recalcular estadísticas
+    await _recalculateSeasonStats();
+    await _recalculateCompetitionStats();
+
+    notifyListeners();
+  }
+
+  Future<void> deleteAllMatches() async {
+    final matchRepo = matchRepoFactory(competition.id);
+    for (final match in _matches) {
+      await matchRepo.delete(match.id);
+    }
+    
+    // Actualizar cache
+    _matches.clear();
 
     // Recalcular estadísticas
     await _recalculateSeasonStats();

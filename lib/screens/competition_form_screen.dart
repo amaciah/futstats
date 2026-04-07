@@ -1,6 +1,7 @@
-// competition_form_screen.dart
+// screens/competition_form_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:futstats/widgets/select_all_text_form_field.dart';
 import 'package:provider/provider.dart';
 
 import 'package:futstats/models/competition.dart';
@@ -33,7 +34,8 @@ class _CompetitionFormScreenState extends State<CompetitionFormScreen> {
       id: widget.competition?.id,
       name: _name!,
       type: _type,
-      numMatchweeks: (_type.isLeague || _type.isTournament && _hasGroups) ? _numMatchweeks : null,
+      numMatchweeks: (_type.isLeague || (_type.isTournament && _hasGroups)) 
+                        ? _numMatchweeks : null,
       numRounds: (_type.isCup || _type.isTournament) ? _numRounds : null,
       hasGroups: _type.isTournament ? _hasGroups : false,
       hasKnockouts: _type.isTournament ? _hasKnockouts : false,
@@ -60,7 +62,7 @@ class _CompetitionFormScreenState extends State<CompetitionFormScreen> {
           child: ListView(
             children: [
               // Nombre
-              TextFormField(
+              SelectAllTextFormField(
                 initialValue: _name,
                 decoration: const InputDecoration(labelText: 'Nombre'),
                 onSaved: (value) => _name = value,
@@ -85,34 +87,10 @@ class _CompetitionFormScreenState extends State<CompetitionFormScreen> {
                 }),
               ),
               const SizedBox(height: 8),
-              // Jornadas (liga o torneo con fase de grupos)
-              if (_type.isLeague || _type.isTournament && _hasGroups)
-                TextFormField(
-                  key: const ValueKey('matchweeks'),
-                  initialValue: _numMatchweeks?.toString(),
-                  decoration: const InputDecoration(labelText: 'Número de jornadas'),
-                  keyboardType: TextInputType.number,
-                  onSaved: (value) => _numMatchweeks = int.tryParse(value ?? ''),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Introduzca el número de jornadas'
-                      : null,
-                ),
-              // Rondas (copa o torneo)
-              if (_type.isCup || _type.isTournament)
-                TextFormField(
-                  key: const ValueKey('rounds'),
-                  initialValue: _numRounds?.toString(),
-                  decoration: const InputDecoration(labelText: 'Número de rondas'),
-                  keyboardType: TextInputType.number,
-                  onSaved: (value) => _numRounds = int.tryParse(value ?? ''),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Introduzca el número de rondas'
-                      : null,
-                ),
               // Opciones de torneo
               if (_type.isTournament) ...[
                 SwitchListTile(
-                  title: const Text('Tiene fase de grupos'),
+                  title: const Text('Tiene fase de liga'),
                   value: _hasGroups, 
                   onChanged: (value) => setState(() => _hasGroups = value),
                 ),
@@ -122,6 +100,30 @@ class _CompetitionFormScreenState extends State<CompetitionFormScreen> {
                   onChanged: (value) => setState(() => _hasKnockouts = value),
                 ),
               ],
+              // Jornadas (liga o torneo con fase de grupos)
+              if (_type.isLeague || _type.isTournament && _hasGroups)
+                SelectAllTextFormField(
+                  key: const ValueKey('matchweeks'),
+                  initialValue: _numMatchweeks?.toString(),
+                  decoration: const InputDecoration(labelText: 'Número de jornadas'),
+                  keyboardType: TextInputType.number,
+                  onSaved: (value) => _numMatchweeks = int.tryParse(value ?? ''),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Introduzca el número de jornadas'
+                      : null,
+                ),
+              // Rondas (copa o torneo con eliminatorias)
+              if (_type.isCup || _type.isTournament && _hasKnockouts)
+                SelectAllTextFormField(
+                  key: const ValueKey('rounds'),
+                  initialValue: _numRounds?.toString(),
+                  decoration: const InputDecoration(labelText: 'Número de rondas'),
+                  keyboardType: TextInputType.number,
+                  onSaved: (value) => _numRounds = int.tryParse(value ?? ''),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Introduzca el número de rondas'
+                      : null,
+                ),
             ],
           ),
         ),

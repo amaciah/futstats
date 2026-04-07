@@ -1,6 +1,7 @@
-// objectives_page.dart
+// screens/objectives_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:futstats/services/preferences_service.dart';
 import 'package:provider/provider.dart';
 
 import 'package:futstats/models/objective.dart';
@@ -20,16 +21,10 @@ class ObjectivesPage extends StatefulWidget {
 class _ObjectivesPageState extends State<ObjectivesPage> {
   Future<Map<String, double>>? _statsFuture;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Regenerar solo cuando cambia la competición seleccionada
-    _statsFuture = context.read<AppState>().getStatsFromSelectedCompetition();
-  }
-
   // Tamaño de las tarjetas por sección
   // 0: small, 1: medium, 2: large
   Map<String, int> sectionCardSizes = {};
+  bool _sizesLoaded = false;
 
   // Colores por categoría
   static const Map<StatCategory, Color> _categoryColors = {
@@ -40,11 +35,39 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
     StatCategory.goalkeeping: Colors.green,
   };
 
+  @override
+  void initState() {
+    super.initState();
+    // Cargar tamaños de tarjetas al iniciar
+    _loadCardSizes();
+  }
+
+  Future<void> _loadCardSizes() async {
+    final categories = StatCategory.values.map((category) => category.name).toList();
+    final sizes = await PreferencesService.instance.getAllCardSizes(categories);
+    if (mounted) {
+      setState(() {
+        sectionCardSizes = sizes;
+        _sizesLoaded = true;
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Regenerar solo cuando cambia la competición seleccionada
+    _statsFuture = context.read<AppState>().getStatsFromSelectedCompetition();
+  }
+
   // Cambia el tamaño de las tarjetas en una sección
   void _changeCardSize(StatCategory category) {
     setState(() {
       final key = category.name;
-      sectionCardSizes[key] = ((sectionCardSizes[key] ?? 0) + 1) % 3;
+      final newSize = ((sectionCardSizes[key] ?? 0) + 1) % 3;
+      sectionCardSizes[key] = newSize;
+      // Guardar preferencia en segundo plano, sin bloquear UI
+      PreferencesService.instance.setCardSize(key, newSize);
     });
   }
 
@@ -61,6 +84,8 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Mostrar indicador de carga hasta que se carguen los tamaños de tarjetas
+    if (!_sizesLoaded) return const WaitingIndicator();
     return Consumer<AppState>(
       builder: (context, appState, _) {
         return FutureBuilder<Map<String, double>>(
@@ -91,6 +116,7 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
                         final objectiveData = categoryObjectives.map((objective) {
                           final template = StatTemplates.allSeasonTemplates[objective.statId]!;
                           return {
+                            'id': objective.id,
                             'title': template.shortTitle,
                             'stat': stats[objective.statId] ?? 0.0,
                             'target': objective.target,
@@ -115,7 +141,7 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
                                 builder: (_) => ObjectiveFormScreen(objective: objective),
                               ),
                             );
-                            if (saved == true) setState(() {});
+                            if (saved == true && mounted) setState(() {});
                           },
                           onObjectiveLongPress: (data) async {
                             final objective = appState.objectives
@@ -140,7 +166,12 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
                             ) ?? false;
                             if (confirmDelete) {
                               await appState.deleteObjective(objective.id);
-                              setState(() {});
+                              if (mounted) {
+                                setState(() {
+                                  // Forzar recarga de estadísticas al eliminar un objetivo
+                                  _statsFuture = appState.getStatsFromSelectedCompetition();
+                                });
+                              }
                             }
                           },
                         );
@@ -156,7 +187,12 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
                       builder: (_) => const ObjectiveFormScreen(),
                     ),
                   ) ?? false;
-                  if (saved) setState(() {});
+                  if (saved && mounted) {
+                    setState(() {
+                    // Forzar recarga de estadísticas al volver del formulario
+                    _statsFuture = context.read<AppState>().getStatsFromSelectedCompetition();
+                  });
+                  }
                 },
               ),
             );

@@ -1,6 +1,7 @@
-// objective_form_screen.dart
+// screens/objective_form_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:futstats/widgets/select_all_text_form_field.dart';
 import 'package:provider/provider.dart';
 
 import 'package:futstats/models/objective.dart';
@@ -85,7 +86,7 @@ class _ObjectiveFormScreenState extends State<ObjectiveFormScreen> {
                   _selectedCategory = value;
                   // Limpiar selección si la estadística no está en el filtro
                   if (_statId != null && _filteredStats[_statId] == null) {
-                    _statId == null;
+                    _statId = null;
                   } 
                 }),
               ),
@@ -118,7 +119,7 @@ class _ObjectiveFormScreenState extends State<ObjectiveFormScreen> {
               ],
               const SizedBox(height: 8),
               // Objetivo numérico
-              TextFormField(
+              SelectAllTextFormField(
                 initialValue: _target?.toString(),
                 decoration: InputDecoration(
                   labelText: 'Objetivo',
@@ -135,7 +136,7 @@ class _ObjectiveFormScreenState extends State<ObjectiveFormScreen> {
               const SizedBox(height: 8),
               // Positivo / negativo
               SwitchListTile(
-                title: const Text('Objetivo positivo'),
+                title: Text(_isPositive ? 'Objetivo positivo' : 'Objetivo negativo'),
                 subtitle: Text(
                   _isPositive
                       ? 'Cumplido al alcanzar o superar el objetivo'

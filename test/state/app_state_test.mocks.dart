@@ -500,6 +500,16 @@ class MockMatchController extends _i1.Mock implements _i16.MatchController {
       ) as _i12.Future<void>);
 
   @override
+  _i12.Future<void> deleteAllMatches() => (super.noSuchMethod(
+        Invocation.method(
+          #deleteAllMatches,
+          [],
+        ),
+        returnValue: _i12.Future<void>.value(),
+        returnValueForMissingStub: _i12.Future<void>.value(),
+      ) as _i12.Future<void>);
+
+  @override
   void addListener(_i18.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #addListener,

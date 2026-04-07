@@ -1,4 +1,4 @@
-// objective_controller.dart
+// controllers/objective_controller.dart
 
 import 'package:futstats/models/objective.dart';
 import 'package:futstats/services/repositories/objective_repository.dart';

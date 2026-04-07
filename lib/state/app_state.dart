@@ -1,4 +1,4 @@
-// app_state.dart
+// state/app_state.dart
 
 import 'package:flutter/material.dart';
 
@@ -202,11 +202,7 @@ class AppState extends ChangeNotifier {
 
     // Borrar los partidos de la competición
     final matchController = createMatchController(competition);
-    await matchController.loadMatches();
-    final matches = matchController.matches;
-    for (final match in matches) {
-      await matchController.deleteMatch(match.id);
-    }
+    await matchController.deleteAllMatches();
 
     // Borrar competición
     await _competitionController!.deleteCompetition(competition.id);

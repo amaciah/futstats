@@ -1,4 +1,4 @@
-// competition_controller.dart
+// controllers/competition_controller.dart
 
 import 'package:futstats/models/competition.dart';
 import 'package:futstats/services/repositories/competition_repository.dart';

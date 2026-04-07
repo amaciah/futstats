@@ -1,4 +1,4 @@
-// stats_page.dart
+// screens/stats_page.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +17,15 @@ class StatsPage extends StatefulWidget {
 }
 
 class _StatsPageState extends State<StatsPage> {
+  Future<Map<String, double>>? _statsFuture;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Cargar estadísticas al cargar la página o cambiar de competición
+    _statsFuture = context.read<AppState>().getStatsFromSelectedCompetition();
+  }
+
   void reload() {
     setState(() {});
   }
@@ -24,7 +33,7 @@ class _StatsPageState extends State<StatsPage> {
   Widget _buildStatDisplay(BuildContext context, AppState appState) {
     return Center(
         child: FutureBuilder<Map<String, double>>(
-          future: appState.getStatsFromSelectedCompetition(),
+          future: _statsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const WaitingIndicator();
@@ -70,7 +79,13 @@ class _StatsPageState extends State<StatsPage> {
                   ),
                 )
               ],
-              onChanged: appState.selectCompetition,
+              onChanged: (competition) {
+                appState.selectCompetition(competition);
+                setState(() {
+                  // Forzar recarga de estadísticas al cambiar de competición
+                  _statsFuture = appState.getStatsFromSelectedCompetition();
+                });
+              },
             ),
             Expanded(child: _buildStatDisplay(context, appState)),
           ],

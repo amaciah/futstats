@@ -1,3 +1,5 @@
+// test/models/models_test.dart
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:futstats/models/competition.dart';
@@ -5,7 +7,6 @@ import 'package:futstats/models/match.dart';
 import 'package:futstats/models/objective.dart';
 import 'package:futstats/models/player.dart';
 import 'package:futstats/models/season.dart';
-import 'package:futstats/models/statistics.dart';
 import '../helpers/test_factories.dart';
 
 void main() {
@@ -173,9 +174,40 @@ void main() {
       expect(c.requiresRound, isTrue);
     });
 
-    test('torneo: requiresMatchweek=false, requiresRound=true', () {
+    test('torneo: ambos false', () {
       final c = Competition(name: 'Torneo', type: CompetitionType.tournament);
       expect(c.requiresMatchweek, isFalse);
+      expect(c.requiresRound, isFalse);
+    });
+
+    test('torneo con grupos: requiresMatchweek=true, requiresRound=false', () {
+      final c = Competition(
+        name: 'Torneo con grupos',
+        type: CompetitionType.tournament,
+        hasGroups: true,
+      );
+      expect(c.requiresMatchweek, isTrue);
+      expect(c.requiresRound, isFalse);
+    });
+
+    test('torneo con eliminación: requiresMatchweek=false, requiresRound=true', () {
+      final c = Competition(
+        name: 'Torneo con eliminación',
+        type: CompetitionType.tournament,
+        hasKnockouts: true,
+      );
+      expect(c.requiresMatchweek, isFalse);
+      expect(c.requiresRound, isTrue);
+    });
+
+    test('torneo con grupos y eliminación: ambos true', () {
+      final c = Competition(
+        name: 'Torneo completo',
+        type: CompetitionType.tournament,
+        hasGroups: true,
+        hasKnockouts: true,
+      );
+      expect(c.requiresMatchweek, isTrue);
       expect(c.requiresRound, isTrue);
     });
 
@@ -183,6 +215,34 @@ void main() {
       final c = Competition(name: 'Amistoso', type: CompetitionType.friendly);
       expect(c.requiresMatchweek, isFalse);
       expect(c.requiresRound, isFalse);
+    });
+  });
+
+  group('RoundNames', () {
+    test('última ronda es Final', () {
+      expect(RoundNames.getRoundName(4, 4), equals('Final'));
+    });
+
+    test('penúltima es Semifinal', () {
+      expect(RoundNames.getRoundName(3, 4), equals('Semifinal'));
+    });
+
+    test('antepenúltima es Cuartos de final', () {
+      expect(RoundNames.getRoundName(2, 4), equals('Cuartos de final'));
+    });
+
+    test('cuarta desde el final es Octavos de final', () {
+      expect(RoundNames.getRoundName(1, 4), equals('Octavos de final'));
+    });
+
+    test('rondas previas a octavos son numéricas', () {
+      expect(RoundNames.getRoundName(1, 6), equals('Ronda 1'));
+      expect(RoundNames.getRoundName(2, 6), equals('Ronda 2'));
+      expect(RoundNames.getRoundName(3, 6), equals('Octavos de final'));
+    });
+
+    test('competición de 1 ronda tiene solo Final', () {
+      expect(RoundNames.getRoundName(1, 1), equals('Final'));
     });
   });
 
